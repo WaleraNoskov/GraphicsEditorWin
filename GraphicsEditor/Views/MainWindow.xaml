@@ -8,7 +8,7 @@
         xmlns:infrastructure="clr-namespace:GraphicsEditor.Infrastructure"
         xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" MinHeight="450" MinWidth="800" Height="450" Width="800"
         Initialized="MainWindow_OnInitialized"
         d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.Resources>
@@ -16,6 +16,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -74,15 +75,15 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="8" x:Name="ImagesGrid">
+            <Label Grid.Row="1" Content="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Grid Grid.Row="1" Margin="8" x:Name="ImagesGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Image x:Name="Origin" />
                 <Image x:Name="Edited" />
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Column="1" Margin="8" MaxWidth="320">
+        <StackPanel Grid.Column="1" Margin="8" MaxWidth="320" IsEnabled="{Binding ImageIsOpened}">
             <StackPanel.Resources>
-                <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
                 <Style x:Key="FiltersRow" TargetType="StackPanel">
                     <Setter Property="Margin" Value="0 0 0 16"></Setter>
                 </Style>
