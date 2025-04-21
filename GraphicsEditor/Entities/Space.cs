@@ -19,13 +19,7 @@ public class Space
         var filtered = new Mat(path);
         Filtered = new Mat();
         Cv2.CvtColor(filtered, Filtered, ColorConversionCodes.BGR2BGRA);
-
-        Filters = new Dictionary<Filter, float>
-        {
-            { Filter.Grayscale, 0 },
-            { Filter.Alpha, 100 },
-            { Filter.Brightness, 0f },
-            { Filter.Contrast, 1f },
-        };
+        
+        Filters = new Dictionary<Filter, float>();
     }
 }

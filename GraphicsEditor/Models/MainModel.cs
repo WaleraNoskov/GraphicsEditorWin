@@ -13,8 +13,11 @@ public class MainModel : PropertyObject
     public MainModel(IFiltersService filtersService)
     {
         _filtersService = filtersService;
+        
         MainSpace = new Space("C:/Users/coder5/Pictures/baboon.bmp");
+        
         Filters = new ReadOnlyDictionary<Filter, float>(_mainSpace.Filters);
+        ResetFilters();
     }
     
     #region MainSpace
@@ -38,18 +41,24 @@ public class MainModel : PropertyObject
         
         MainSpace.Filters[filter] = mix;
 
-        ReApplyAllFiltersAsync();
+        ReApplyAllFilters();
         OnPropertyChanged(nameof(Filters));
     }
 
-    private void RemoveFilterAsync(Filter filter)
+    public void ResetFilters()
     {
-        MainSpace.Filters.Remove(filter);
+        MainSpace.Filters.Clear();
         
-        ReApplyAllFiltersAsync();
+        MainSpace.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
+        MainSpace.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
+        MainSpace.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);
+        MainSpace.Filters.Add(Filter.Alpha, DefaultFilterValues.DefaultAlpha);
+        
+        ReApplyAllFilters();
+        OnPropertyChanged(nameof(Filters));
     }
 
-    private void ReApplyAllFiltersAsync()
+    private void ReApplyAllFilters()
     {
         MainSpace.Filtered.Dispose();
         MainSpace.Filtered = MainSpace.Original.Clone();

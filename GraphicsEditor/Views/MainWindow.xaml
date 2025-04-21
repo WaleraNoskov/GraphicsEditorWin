@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         Initialized="MainWindow_OnInitialized"
-        d:DataContext="{d:DesignInstance viewModels:MainViewModel}" >
+        d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,51 +33,56 @@
         <StackPanel Grid.Column="1">
             <StackPanel.Resources>
                 <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+                <Style x:Key="FiltersRow" TargetType="StackPanel">
+                    <Setter Property="Margin" Value="0 0 0 16"></Setter>
+                </Style>
             </StackPanel.Resources>
-            <StackPanel>
+            <StackPanel Style="{StaticResource FiltersRow}">
                 <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                    <Label Content="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
                     <Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22"
                             Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                     </Button>
                 </StackPanel>
                 <Slider x:Name="GrayscaleSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinGrayscale}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxGrayscale}"
+                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinGrayscalePercent}"
+                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxGrayscalePercent}"
                         TickFrequency="1"
                         Value="{Binding Grayscale}" />
             </StackPanel>
 
-            <StackPanel>
+            <StackPanel Style="{StaticResource FiltersRow}">
                 <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Brightness" Margin="0 0 4 0" VerticalAlignment="Center"/>
+                    <Label Content="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
                     <Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22"
                             Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                     </Button>
                 </StackPanel>
                 <Slider x:Name="BrightnessSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinBrightness}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxBrightness}"
+                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinBrightnessPercent}"
+                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxBrightnessPercent}"
                         TickFrequency="1"
                         Value="{Binding Brightness}" />
             </StackPanel>
 
-            <StackPanel>
+            <StackPanel Style="{StaticResource FiltersRow}">
                 <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Contrast" Margin="0 0 4 0" VerticalAlignment="Center"/>
+                    <Label Content="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
                     <Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0"
                             Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
                         <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                     </Button>
                 </StackPanel>
                 <Slider x:Name="ContrastSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinContrast}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxContrast}"
+                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinContrastPercent}"
+                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxContrastPercent}"
                         TickFrequency="1"
                         Value="{Binding Contrast}" />
             </StackPanel>
+
+            <Button HorizontalAlignment="Stretch" Content="Clear" Command="{Binding ResetCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

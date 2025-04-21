@@ -17,16 +17,40 @@ public class MainViewModel : PropertyObject
     public MainViewModel(MainModel model)
     {
         _model = model;
-        _model.PropertyChanged += (sender, args) => OnPropertyChanged(args.PropertyName ?? string.Empty);
+        _model.PropertyChanged += (sender, args) =>
+        {
+            OnPropertyChanged(args.PropertyName ?? string.Empty);
+
+            if (args.PropertyName == nameof(_model.Filters))
+            {
+                OnPropertyChanged(nameof(Grayscale));
+                OnPropertyChanged(nameof(GrayscaleIsEnabled));
+                OnPropertyChanged(nameof(Brightness));
+                OnPropertyChanged(nameof(BrightnessIsEnabled));
+                OnPropertyChanged(nameof(Contrast));
+                OnPropertyChanged(nameof(ContrastIsEnabled));
+            }
+        };
+
+        ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
     }
 
     public Mat OriginImage => _model.MainSpace.Original;
     
     public Mat EditedImage => _model.MainSpace.Filtered;
     
-    public IReadOnlyDictionary<Filter, float> Filters => _model.Filters;
+    public IReadOnlyDictionary<Filter, float> Filters
+    {
+        get
+        {
+            OnPropertyChanged(nameof(Grayscale));
+            OnPropertyChanged(nameof(Contrast));
+            OnPropertyChanged(nameof(Brightness));
+            return _model.Filters;
+        }
+    }
 
-    public bool GrayscaleIsEnabled => Grayscale != DefaultFilterValues.DefaultGrayscale;
+    public bool GrayscaleIsEnabled => Grayscale != DefaultFilterValues.DefaultGrayscalePercent;
     public int Grayscale
     {
         get => _model.Filters[Filter.Grayscale].ToPercentage();
@@ -37,7 +61,7 @@ public class MainViewModel : PropertyObject
         }
     }
 
-    public bool BrightnessIsEnabled => Brightness != DefaultFilterValues.DefaultBrightness;
+    public bool BrightnessIsEnabled => Brightness != DefaultFilterValues.DefaultBrightnessPercent;
     public int Brightness
     {
         get => (int)_model.Filters[Filter.Brightness];
@@ -48,14 +72,27 @@ public class MainViewModel : PropertyObject
         }
     }
 
-    public bool ContrastIsEnabled => Contrast != DefaultFilterValues.DefaultContrast;
+    public bool ContrastIsEnabled => Contrast != DefaultFilterValues.DefaultContrastPercent;
     public int Contrast
     {
-        get => (int)_model.Filters[Filter.Contrast].ToPercentage();
+        get => _model.Filters[Filter.Contrast].ToPercentage();
         set
         {
             _model.SetFilterAsync(Filter.Contrast, value.FromPercentage());
             OnPropertyChanged(nameof(ContrastIsEnabled));
         }
     }
+
+    #region ResetCommand
+
+    public ICommand ResetCommand { get; set; }
+
+    private void OnResetCommandExecuted()
+    {
+        _model.ResetFilters();
+    }
+
+    private bool CanResetCommandExecute() => true;
+
+    #endregion
 }
