@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Models;
+using Microsoft.Win32;
 using OpenCvSharp;
 
 namespace GraphicsEditor.ViewModels;
@@ -33,6 +34,7 @@ public class MainViewModel : PropertyObject
         };
 
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
+        OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
     }
 
     public Mat OriginImage => _model.MainSpace.Original;
@@ -83,16 +85,41 @@ public class MainViewModel : PropertyObject
         }
     }
 
+    public bool ImageIsOpened => _model.ImageIsOpened;
+    
     #region ResetCommand
 
     public ICommand ResetCommand { get; set; }
 
     private void OnResetCommandExecuted()
     {
-        _model.ResetFilters();
+        _model.ResetAndReapplyFilters();
     }
 
     private bool CanResetCommandExecute() => true;
+
+    #endregion
+
+    #region OpenImageDialog
+
+    public ICommand OpenImageDialogCommand { get; set; }
+
+    private void OnOpenImageDialogCommandExecuted()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Multiselect = false,
+            Filter = "Image files (*.png;*.jpeg,*.jpg,*.bmp)|*.png;*.jpeg;*.jpg;*.bmp"
+        };
+
+        var result = dialog.ShowDialog();
+        if (result is not true)
+            return;
+
+        _model.OpenImage(dialog.FileName);
+    }
+
+    private bool CanOpenImageDialogCommandExecute() => true;
 
     #endregion
 }

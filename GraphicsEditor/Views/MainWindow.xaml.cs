@@ -18,8 +18,6 @@ public partial class MainWindow : Window
     {
         DataContext = viewModel;
         InitializeComponent();
-
-        RefreshCanvases();
     }
 
     private void MainWindow_OnInitialized(object? sender, EventArgs e)
@@ -29,7 +27,7 @@ public partial class MainWindow : Window
 
     private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.OriginImage) or nameof(ViewModel.EditedImage) or nameof(ViewModel.Filters))
+        if ((e.PropertyName is nameof(ViewModel.OriginImage) or nameof(ViewModel.EditedImage) or nameof(ViewModel.Filters)) && ViewModel.ImageIsOpened)
             Dispatcher.InvokeAsync(RefreshCanvases);
     }
 

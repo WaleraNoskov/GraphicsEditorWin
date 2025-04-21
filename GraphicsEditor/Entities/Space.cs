@@ -2,14 +2,14 @@
 
 namespace GraphicsEditor.Entities;
 
-public class Space
+public class Space : IDisposable
 {
     public Mat Original { get; set; }
 
     public IDictionary<Filter, float> Filters { get; set; }
 
     public Mat Filtered { get; set; }
-
+    
     public Space(string path)
     {
         var original = new Mat(path);
@@ -22,4 +22,23 @@ public class Space
         
         Filters = new Dictionary<Filter, float>();
     }
+    
+    public Space()
+    {
+        Original = new Mat();
+        Filtered = new Mat();
+        Filters = new Dictionary<Filter, float>();
+    }
+
+    #region Dispose
+
+    public void Dispose()
+    {
+        Original.Dispose();
+        Filtered.Dispose();
+    }
+    
+    ~Space() => Dispose();
+
+    #endregion
 }

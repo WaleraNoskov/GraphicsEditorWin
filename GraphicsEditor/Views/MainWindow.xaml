@@ -51,7 +51,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal">
-                    <Button Margin="0 0 8 0" Height="32">
+                    <Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
                         <StackPanel Orientation="Horizontal">
                             <wpf:FluentIcon Icon="Open" IconVariant="Filled"/>
                             <Label VerticalAlignment="Center" Padding="0" Content="Open"/>
