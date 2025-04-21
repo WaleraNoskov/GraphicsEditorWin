@@ -1,6 +1,6 @@
 ﻿using OpenCvSharp;
 
-namespace GraphicsEditor.Core.Services;
+namespace GraphicsEditor.Services;
 
 public interface IFiltersService
 {

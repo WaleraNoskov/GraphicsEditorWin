@@ -1,4 +1,4 @@
-﻿namespace GraphicsEditor.Core.Entities;
+﻿namespace GraphicsEditor.Entities;
 
 public enum Filter
 {

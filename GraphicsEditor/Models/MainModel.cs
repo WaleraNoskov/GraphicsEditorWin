@@ -1,13 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using GraphicsEditor.Core.Entities;
-using GraphicsEditor.Core.Services;
+using GraphicsEditor.Entities;
+using GraphicsEditor.Infrastructure;
+using GraphicsEditor.Services;
 using OpenCvSharp;
 
-namespace GraphicsEditor.Core.Models;
+namespace GraphicsEditor.Models;
 
-public class MainModel : BaseViewModel
+public class MainModel : PropertyObject
 {
     private readonly IFiltersService _filtersService;
 
@@ -15,7 +14,7 @@ public class MainModel : BaseViewModel
     {
         _filtersService = filtersService;
         MainSpace = new Space("C:/Users/coder5/Pictures/baboon.bmp");
-        Filters = new Dictionary<Filter, float>(_mainSpace.Filters);
+        Filters = new ReadOnlyDictionary<Filter, float>(_mainSpace.Filters);
     }
     
     #region MainSpace
@@ -30,7 +29,7 @@ public class MainModel : BaseViewModel
 
     #endregion
     
-    public IDictionary<Filter, float> Filters { get; }
+    public IReadOnlyDictionary<Filter, float> Filters { get; }
 
     public void SetFilterAsync(Filter filter, float mix)
     {

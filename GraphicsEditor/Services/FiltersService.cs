@@ -1,6 +1,6 @@
 ﻿using OpenCvSharp;
 
-namespace GraphicsEditor.Core.Services;
+namespace GraphicsEditor.Services;
 
 public class FiltersService : IFiltersService
 {
@@ -10,11 +10,7 @@ public class FiltersService : IFiltersService
         //     throw new ArgumentException("Input must be BGRA (CV_8UC4)");
 
         // Извлекаем каналы
-        var channels = Cv2.Split(mat);
-        var b = channels[0];
-        var g = channels[1];
-        var r = channels[2];
-        var a = channels[3];
+        var alpha = Cv2.Split(mat)[3];
 
         // Считаем оттенок серого вручную (можно использовать любой метод)
         var gray = new Mat();
@@ -22,9 +18,9 @@ public class FiltersService : IFiltersService
         
         // Собираем BGRA, где B = G = R = gray, и оригинальный A
         var grayed = new Mat();
-        Cv2.Merge([gray, gray, gray, a], grayed); // Теперь снова CV_8UC4
+        Cv2.Merge([gray, gray, gray, alpha], grayed); // Теперь снова CV_8UC4
         
-        grayed.CopyTo(mat);
+        Cv2.AddWeighted(grayed, mix, mat, 1.0 - mix, 0, mat);
     }
     
     public void ApplyAlpha(Mat mat, float alpha)

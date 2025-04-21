@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace GraphicsEditor;
+namespace GraphicsEditor.Infrastructure;
 
-public class BaseViewModel : INotifyPropertyChanged
+public class PropertyObject : INotifyPropertyChanged
 {
     #region INotifyPropertyChanged
 

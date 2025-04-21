@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using GraphicsEditor.Infrastructure;
 using GraphicsEditor.ViewModels;
 using OpenCvSharp.WpfExtensions;
 
@@ -36,4 +37,10 @@ public partial class MainWindow : Window
         Origin.Source = ViewModel.OriginImage.ToWriteableBitmap();
         Edited.Source = ViewModel.EditedImage.ToWriteableBitmap();
     }
+
+    private void GrayscaleDefaultButton_OnClick(object sender, RoutedEventArgs e) => GrayscaleSlider.Value = DefaultFilterValues.DefaultGrayscale;
+
+    private void BrightnessDefaultButton_OnClick(object sender, RoutedEventArgs e) => BrightnessSlider.Value = DefaultFilterValues.DefaultBrightness;
+    
+    private void ContrastDefaultButton_OnClick(object sender, RoutedEventArgs e) => ContrastSlider.Value = DefaultFilterValues.DefaultContrast;
 }
