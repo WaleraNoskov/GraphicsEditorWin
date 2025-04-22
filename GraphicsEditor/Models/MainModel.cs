@@ -1,4 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Services;
@@ -10,16 +13,18 @@ namespace GraphicsEditor.Models;
 public class MainModel : PropertyObject
 {
     private readonly IFiltersService _filtersService;
+    private readonly ISavingService _savingService;
 
-    public MainModel(IFiltersService filtersService)
+    public MainModel(IFiltersService filtersService, ISavingService savingService)
     {
         _filtersService = filtersService;
+        _savingService = savingService;
 
         MainSpace = new Space();
         ResetFilters();
         Filters = new ReadOnlyDictionary<Filter, float>(MainSpace.Filters);
     }
-    
+
     #region MainSpace
 
     private Space _mainSpace;
@@ -46,14 +51,14 @@ public class MainModel : PropertyObject
     }
 
     #endregion ImageIsOpened
-    
+
     public IReadOnlyDictionary<Filter, float> Filters { get; private set; }
 
     public void SetFilterAsync(Filter filter, float mix)
     {
-        if(!MainSpace.Filters.ContainsKey(filter))
+        if (!MainSpace.Filters.ContainsKey(filter))
             MainSpace.Filters.TryAdd(filter, mix);
-        
+
         MainSpace.Filters[filter] = mix;
 
         ReApplyAllFilters();
@@ -64,7 +69,7 @@ public class MainModel : PropertyObject
     {
         ResetFilters();
         ReApplyAllFilters();
-        
+
         OnPropertyChanged(nameof(Filters));
     }
 
@@ -73,11 +78,27 @@ public class MainModel : PropertyObject
         MainSpace?.Dispose();
         MainSpace = new Space(path);
         ImageIsOpened = true;
-        
+
         Filters = new ReadOnlyDictionary<Filter, float>(_mainSpace.Filters);
         ResetAndReapplyFilters();
     }
-    
+
+    public async Task<bool> SaveImage(string path)
+    {
+        var extension = Path.GetExtension(path);
+
+        return extension switch
+        {
+            ".jpeg" or ".jpg"
+                => _savingService.SaveAsJpg(MainSpace.Filtered, path, 100),
+            ".png"
+                => _savingService.SaveAsPng(MainSpace.Filtered, path, 0),
+            ".tiff"
+                => _savingService.SaveAsTiff(MainSpace.Filtered, path),
+            _ => false
+        };
+    }
+
     private void ReApplyAllFilters()
     {
         MainSpace.Filtered.Dispose();
@@ -91,20 +112,20 @@ public class MainModel : PropertyObject
                 Filter.Alpha => _filtersService.ApplyAlpha,
                 _ => null
             };
-        
+
             filteringAction?.Invoke(MainSpace.Filtered, filter.Value);
         }
 
         var foundContrast = MainSpace.Filters.TryGetValue(Filter.Contrast, out var contrast);
         var foundBrightness = MainSpace.Filters.TryGetValue(Filter.Brightness, out var brightness);
-        
+
         _filtersService.ApplyBrightnessAndContrast(MainSpace.Filtered, foundContrast ? contrast : 1, foundBrightness ? brightness : 0);
     }
 
     private void ResetFilters()
     {
         MainSpace.Filters.Clear();
-        
+
         MainSpace.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
         MainSpace.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
         MainSpace.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);

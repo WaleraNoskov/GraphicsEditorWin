@@ -58,7 +58,7 @@
                             <Label VerticalAlignment="Center" Padding="0" Content="Open"/>
                         </StackPanel>
                     </Button>
-                    <Button Height="32">
+                    <Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding ImageIsOpened}">
                         <StackPanel Orientation="Horizontal">
                             <wpf:FluentIcon Icon="Save" IconVariant="Filled"/>
                             <Label VerticalAlignment="Center" Padding="0" Content="Save" />
@@ -66,7 +66,7 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2">
+                <StackPanel Grid.Column="2" Visibility="{Binding ImageIsChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Button Height="32" Width="32" Padding="0" x:Name="HidePreviewButton"
                             PreviewMouseDown="HidePreviewButton_OnPreviewMouseDown"
                             PreviewMouseUp="HidePreviewButton_OnPreviewMouseUp">

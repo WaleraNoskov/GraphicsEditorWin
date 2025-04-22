@@ -12,13 +12,13 @@ public class Space : IDisposable
     
     public Space(string path)
     {
-        var original = new Mat(path);
-        Original = new Mat();
-        Cv2.CvtColor(original, Original, ColorConversionCodes.BGR2BGRA);
+        Original = new Mat(path);
+        Original.ConvertTo(Original, MatType.CV_8UC4);
+        Cv2.CvtColor(Original, Original, ColorConversionCodes.BGR2BGRA);
 
-        var filtered = new Mat(path);
-        Filtered = new Mat();
-        Cv2.CvtColor(filtered, Filtered, ColorConversionCodes.BGR2BGRA);
+        Filtered = new Mat(path);
+        Filtered.ConvertTo(Filtered, MatType.CV_8UC4);
+        Cv2.CvtColor(Filtered, Filtered, ColorConversionCodes.BGR2BGRA);
         
         Filters = new Dictionary<Filter, float>();
     }

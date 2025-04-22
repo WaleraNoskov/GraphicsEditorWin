@@ -35,6 +35,7 @@ public class MainViewModel : PropertyObject
 
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
         OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
+        SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
     }
 
     public Mat OriginImage => _model.MainSpace.Original;
@@ -60,6 +61,7 @@ public class MainViewModel : PropertyObject
         {
             _model.SetFilterAsync(Filter.Grayscale, value.FromPercentage()); 
             OnPropertyChanged(nameof(GrayscaleIsEnabled));
+            OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
 
@@ -71,6 +73,7 @@ public class MainViewModel : PropertyObject
         {
             _model.SetFilterAsync(Filter.Brightness, value);
             OnPropertyChanged(nameof(BrightnessIsEnabled));
+            OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
 
@@ -82,10 +85,13 @@ public class MainViewModel : PropertyObject
         {
             _model.SetFilterAsync(Filter.Contrast, value.FromPercentage());
             OnPropertyChanged(nameof(ContrastIsEnabled));
+            OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
 
     public bool ImageIsOpened => _model.ImageIsOpened;
+    
+    public bool ImageIsChanged => _model.ImageIsOpened && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
     
     #region ResetCommand
 
@@ -94,6 +100,7 @@ public class MainViewModel : PropertyObject
     private void OnResetCommandExecuted()
     {
         _model.ResetAndReapplyFilters();
+        OnPropertyChanged(nameof(ImageIsChanged));
     }
 
     private bool CanResetCommandExecute() => true;
@@ -120,6 +127,27 @@ public class MainViewModel : PropertyObject
     }
 
     private bool CanOpenImageDialogCommandExecute() => true;
+
+    #endregion
+
+    #region SaveFileDialog
+
+    public ICommand SaveFileDialogCommand { get; set; }
+
+    private async Task OnSaveFileDialogCommandExecuted()
+    {
+        var dialog = new SaveFileDialog();
+        dialog.FileName = "Untitled";
+        dialog.Filter = "Png files (*.png)|*.png|Jpeg files (*.jpeg)|*.jpeg|Bmp files (*.bmp)|*.bmp|Tiff files (*.tiff)|*.tiff";
+        
+        var result = dialog.ShowDialog();
+        if (result is not true)
+            return;
+        
+        await _model.SaveImage(dialog.FileName);
+    }
+
+    private bool CanSaveFileDialogCommandExecute() => true;
 
     #endregion
 }

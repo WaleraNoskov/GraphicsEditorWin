@@ -16,7 +16,9 @@ public class Program
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTransient<IFiltersService, FiltersService>();
+                services
+                    .AddTransient<IFiltersService, FiltersService>()
+                    .AddTransient<ISavingService, SavingService>();
                 
                 services
                     .AddSingleton<MainModel>()
