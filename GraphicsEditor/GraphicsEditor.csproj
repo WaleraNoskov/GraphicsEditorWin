@@ -16,6 +16,7 @@
       <PackageReference Include="OpenCvSharp4.Extensions" Version="4.10.0.20241108" />
       <PackageReference Include="OpenCvSharp4.Windows" Version="4.10.0.20241108" />
       <PackageReference Include="OpenCvSharp4.WpfExtensions" Version="4.10.0.20241108" />
+      <PackageReference Include="WPF-UI" Version="4.0.2" />
     </ItemGroup>
 
     <ItemGroup>

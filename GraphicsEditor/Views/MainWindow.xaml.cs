@@ -4,13 +4,14 @@ using System.Windows.Input;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.ViewModels;
 using OpenCvSharp.WpfExtensions;
+using Wpf.Ui.Appearance;
 
 namespace GraphicsEditor.Views;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     private MainViewModel ViewModel => (DataContext as MainViewModel)!;
 
@@ -18,6 +19,7 @@ public partial class MainWindow : Window
     {
         DataContext = viewModel;
         InitializeComponent();
+        ApplicationThemeManager.Apply(this);
     }
 
     private void MainWindow_OnInitialized(object? sender, EventArgs e)

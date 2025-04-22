@@ -1,4 +1,4 @@
-﻿<Window x:Class="GraphicsEditor.Views.MainWindow"
+﻿<ui:FluentWindow x:Class="GraphicsEditor.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,6 +7,7 @@
         xmlns:viewModels="clr-namespace:GraphicsEditor.ViewModels"
         xmlns:infrastructure="clr-namespace:GraphicsEditor.Infrastructure"
         xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="450" MinWidth="800" Height="450" Width="800"
         Initialized="MainWindow_OnInitialized"
@@ -14,10 +15,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -34,113 +36,102 @@
             </Grid.RowDefinitions>
 
             <Grid Margin="8">
-                <Grid.Resources>
-                    <Style x:Key="OpenButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="Background" Value="#009c84"/>
-                        <Setter Property="Foreground" Value="White"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#007866" ></Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Resources>
-                
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
+                
                 <StackPanel Orientation="Horizontal">
-                    <Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
+                    <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <wpf:FluentIcon Icon="Open" IconVariant="Filled"/>
-                            <Label VerticalAlignment="Center" Padding="0" Content="Open"/>
+                            <wpf:FluentIcon Icon="Open" IconVariant="Filled" />
+                            <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Open" />
                         </StackPanel>
-                    </Button>
-                    <Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding ImageIsOpened}">
+                    </ui:Button>
+                    <ui:Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding ImageIsOpened}">
                         <StackPanel Orientation="Horizontal">
-                            <wpf:FluentIcon Icon="Save" IconVariant="Filled"/>
-                            <Label VerticalAlignment="Center" Padding="0" Content="Save" />
+                            <wpf:FluentIcon Icon="Save" IconVariant="Filled" />
+                            <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Save" />
                         </StackPanel>
-                    </Button>
+                    </ui:Button>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Visibility="{Binding ImageIsChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Button Height="32" Width="32" Padding="0" x:Name="HidePreviewButton"
-                            PreviewMouseDown="HidePreviewButton_OnPreviewMouseDown"
-                            PreviewMouseUp="HidePreviewButton_OnPreviewMouseUp">
+                    <ui:Button Height="32" Width="32" Padding="0" x:Name="HidePreviewButton"
+                               PreviewMouseDown="HidePreviewButton_OnPreviewMouseDown"
+                               PreviewMouseUp="HidePreviewButton_OnPreviewMouseUp">
                         <wpf:FluentIcon Icon="Eye"></wpf:FluentIcon>
-                    </Button>
+                    </ui:Button>
                 </StackPanel>
             </Grid>
 
-            <Label Grid.Row="1" Content="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
+            <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
             <Grid Grid.Row="1" Margin="8" x:Name="ImagesGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Image x:Name="Origin" />
                 <Image x:Name="Edited" />
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Column="1" Margin="8" MaxWidth="320" IsEnabled="{Binding ImageIsOpened}">
-            <StackPanel.Resources>
+        <ui:Card Grid.Column="1" Margin="8" IsEnabled="{Binding ImageIsOpened}">
+            <ui:Card.Resources>
                 <Style x:Key="FiltersRow" TargetType="StackPanel">
                     <Setter Property="Margin" Value="0 0 0 16"></Setter>
                 </Style>
-            </StackPanel.Resources>
-            
-            <StackPanel Style="{StaticResource FiltersRow}">
-                <TextBlock FontSize="16" FontWeight="Bold">Filters</TextBlock>
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource FiltersRow}">
-                <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
-                    <Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22"
-                            Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                    </Button>
+            </ui:Card.Resources>
+            <StackPanel>
+                <StackPanel Style="{StaticResource FiltersRow}">
+                    <ui:TextBlock FontSize="16" FontWeight="Bold">Filters</ui:TextBlock>
                 </StackPanel>
-                <Slider x:Name="GrayscaleSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinGrayscalePercent}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxGrayscalePercent}"
-                        TickFrequency="1"
-                        Value="{Binding Grayscale}" />
-            </StackPanel>
 
-            <StackPanel Style="{StaticResource FiltersRow}">
-                <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
-                    <Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22"
-                            Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                    </Button>
+                <StackPanel Style="{StaticResource FiltersRow}">
+                    <StackPanel Orientation="Horizontal" Height="22">
+                        <ui:TextBlock Text="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
+                        <ui:Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22"
+                                   Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
+                        </ui:Button>
+                    </StackPanel>
+                    <Slider x:Name="GrayscaleSlider"
+                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinGrayscalePercent}"
+                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxGrayscalePercent}"
+                            TickFrequency="1"
+                            Value="{Binding Grayscale}" />
                 </StackPanel>
-                <Slider x:Name="BrightnessSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinBrightnessPercent}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxBrightnessPercent}"
-                        TickFrequency="1"
-                        Value="{Binding Brightness}" />
-            </StackPanel>
 
-            <StackPanel Style="{StaticResource FiltersRow}">
-                <StackPanel Orientation="Horizontal" Height="22">
-                    <Label Content="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
-                    <Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0"
-                            Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
-                        <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                    </Button>
+                <StackPanel Style="{StaticResource FiltersRow}">
+                    <StackPanel Orientation="Horizontal" Height="22">
+                        <ui:TextBlock Text="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
+                        <ui:Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22"
+                                   Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
+                        </ui:Button>
+                    </StackPanel>
+                    <Slider x:Name="BrightnessSlider"
+                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinBrightnessPercent}"
+                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxBrightnessPercent}"
+                            TickFrequency="1"
+                            Value="{Binding Brightness}" />
                 </StackPanel>
-                <Slider x:Name="ContrastSlider"
-                        Minimum="{x:Static infrastructure:DefaultFilterValues.MinContrastPercent}"
-                        Maximum="{x:Static infrastructure:DefaultFilterValues.MaxContrastPercent}"
-                        TickFrequency="1"
-                        Value="{Binding Contrast}" />
-            </StackPanel>
 
-            <Button HorizontalAlignment="Stretch" Content="Clear" Command="{Binding ResetCommand}" />
-        </StackPanel>
+                <StackPanel Style="{StaticResource FiltersRow}">
+                    <StackPanel Orientation="Horizontal" Height="22">
+                        <ui:TextBlock Text="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
+                        <ui:Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0"
+                                   Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
+                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
+                        </ui:Button>
+                    </StackPanel>
+                    <Slider x:Name="ContrastSlider"
+                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinContrastPercent}"
+                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxContrastPercent}"
+                            TickFrequency="1"
+                            Value="{Binding Contrast}" />
+                </StackPanel>
+
+                <ui:Button HorizontalAlignment="Stretch" Content="Clear" Command="{Binding ResetCommand}" />
+            </StackPanel>
+        </ui:Card>
     </Grid>
-</Window>
+</ui:FluentWindow>
