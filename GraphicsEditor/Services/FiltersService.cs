@@ -51,6 +51,16 @@ public class FiltersService : IFiltersService
 
     public void ApplyBrightnessAndContrast(Mat mat, float contrast, float brightness)
     {
-        Cv2.ConvertScaleAbs(mat, mat, contrast, brightness);
+        Mat[] channels = Cv2.Split(mat);
+        var b = channels[0];
+        var g = channels[1];
+        var r = channels[2];
+        var a = channels[3];
+        
+        Cv2.ConvertScaleAbs(b, b, contrast, brightness);
+        Cv2.ConvertScaleAbs(g, g, contrast, brightness);
+        Cv2.ConvertScaleAbs(r, r, contrast, brightness);
+        
+        Cv2.Merge([b, g, r, a], mat);
     }
 }
