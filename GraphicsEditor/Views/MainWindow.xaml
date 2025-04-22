@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -75,7 +76,8 @@
                 </StackPanel>
             </Grid>
 
-            <Label Grid.Row="1" Content="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Label Grid.Row="1" Content="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
             <Grid Grid.Row="1" Margin="8" x:Name="ImagesGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Image x:Name="Origin" />
                 <Image x:Name="Edited" />

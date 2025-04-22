@@ -138,7 +138,7 @@ public class MainViewModel : PropertyObject
     {
         var dialog = new SaveFileDialog();
         dialog.FileName = "Untitled";
-        dialog.Filter = "Png files (*.png)|*.png|Jpeg files (*.jpeg)|*.jpeg|Bmp files (*.bmp)|*.bmp|Tiff files (*.tiff)|*.tiff";
+        dialog.Filter = "Png files (*.png)|*.png|Jpeg files (*.jpeg)|*.jpeg|Tiff files (*.tiff)|*.tiff";
         
         var result = dialog.ShowDialog();
         if (result is not true)
