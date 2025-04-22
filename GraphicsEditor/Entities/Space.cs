@@ -12,13 +12,11 @@ public class Space : IDisposable
     
     public Space(string path)
     {
-        Original = new Mat(path);
+        Original = Cv2.ImRead(path, ImreadModes.Unchanged);
         Original.ConvertTo(Original, MatType.CV_8UC4);
         Cv2.CvtColor(Original, Original, ColorConversionCodes.BGR2BGRA);
 
-        Filtered = new Mat(path);
-        Filtered.ConvertTo(Filtered, MatType.CV_8UC4);
-        Cv2.CvtColor(Filtered, Filtered, ColorConversionCodes.BGR2BGRA);
+        Filtered = Original.Clone();
         
         Filters = new Dictionary<Filter, float>();
     }
