@@ -1,2 +1,13 @@
-Small and nice tool to edit image. At this moment you apply grayscale, set brightness and contrast to image.
-![изображение](https://github.com/user-attachments/assets/b3d2d275-c46d-49c9-8d2f-9b66d53fdfd0)
+# About the program
+![изображение](https://github.com/user-attachments/assets/a536a5e6-00d0-4b8b-859c-b1f825e5fa5f)
+
+Small and nice image editing tool.
+
+### Features:
+* Editing .PNG, .JPG and .TIFF images.
+* Correcting Brightness and Contrast levels.
+   Applying grayscale level.
+
+### Technologies:
+* WPF + MVVM.
+* OpenCvSharp.
