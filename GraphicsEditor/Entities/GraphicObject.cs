@@ -2,7 +2,7 @@
 
 namespace GraphicsEditor.Entities;
 
-public class GraphicObject : IDisposable
+public class GraphicObject : IDisposable, ICloneable
 {
     public string Name { get; set; }
     
@@ -32,6 +32,17 @@ public class GraphicObject : IDisposable
         Filters = new Dictionary<Filter, float>();
     }
 
+    public object Clone()
+    {
+        return new GraphicObject
+        {
+            Name = Name,
+            Original = Original.Clone(),
+            Filtered = Filtered.Clone(),
+            Filters = new Dictionary<Filter, float>(Filters)
+        };
+    }
+    
     #region Dispose
 
     public void Dispose()

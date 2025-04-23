@@ -35,7 +35,7 @@ public partial class MainWindow
 
     private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.Filters) && ViewModel.ImageIsOpened)
+        if ((e.PropertyName is nameof(ViewModel.Filters) or nameof(ViewModel.Layers)) && ViewModel.ImageIsOpened)
             Dispatcher.InvokeAsync(RefreshCanvases);
     }
 
@@ -43,8 +43,11 @@ public partial class MainWindow
     {
         LayersGrid.Children.Clear();
 
-        foreach (var layer in ViewModel.Layers)
-            LayersGrid.Children.Add(new Image { Source = layer.Filtered.ToWriteableBitmap() });
+        if (!ViewModel.Layers.Any())
+            return;
+
+        for (var i = ViewModel.Layers.Count - 1; i >= 0; i--)
+            LayersGrid.Children.Add(new Image { Source = ViewModel.Layers[i].Filtered.ToWriteableBitmap() });
     }
 
     private void GrayscaleDefaultButton_OnClick(object sender, RoutedEventArgs e) => GrayscaleSlider.Value = DefaultFilterValues.DefaultGrayscalePercent;

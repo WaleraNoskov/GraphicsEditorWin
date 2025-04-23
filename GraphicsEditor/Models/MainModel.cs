@@ -75,17 +75,42 @@ public class MainModel : PropertyObject
         OnPropertyChanged(nameof(Filters));
     }
 
-    public void AddLayerFromFiles(string path)
+    public void AddLayerFromFile(string path)
     {
         var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
         Layers.Add(layer);
-        ResetAndReapplyFilters(layer);
-        
-        SelectLayer(layer);
-        
+    
         ImageIsOpened = true;
+        
+        ResetAndReapplyFilters(layer);
+        SelectLayer(layer);
     }
 
+    public void DeleteLayer()
+    {
+        if(SelectedLayer is null)
+            return;
+        
+        var layerToDelete = SelectedLayer;
+        SelectedLayer = null;
+        
+        Layers.Remove(layerToDelete);
+        layerToDelete.Dispose();
+        
+        OnPropertyChanged(nameof(Layers));
+    }
+
+    public void DuplicateLayer()
+    {
+        if (SelectedLayer is null)
+            return;
+
+        var duplicate = (GraphicObject)SelectedLayer.Clone();
+        Layers.Add(duplicate);
+        SelectLayer(duplicate);
+        ReApplyAllFilters(duplicate);
+    }
+    
     public async Task<bool> SaveImage(string path)
     {
         var extension = Path.GetExtension(path);

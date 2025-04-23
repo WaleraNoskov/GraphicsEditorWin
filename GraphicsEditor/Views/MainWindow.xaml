@@ -22,17 +22,15 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
-            <Style x:Key="FiltersRow" TargetType="StackPanel">
-                <Setter Property="Margin" Value="0 0 0 16"></Setter>
-            </Style>
+            <infrastructure:IsNullToEnabledConverter x:Key="IsNullToEnabledConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="256px"/>
+            <ColumnDefinition Width="256px" />
             <ColumnDefinition />
-            <ColumnDefinition Width="256px"/>
+            <ColumnDefinition Width="256px" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -48,7 +46,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel ZIndex="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8 0 0 0">
-                <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
+                <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}" Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <wpf:FluentIcon Icon="Open" IconVariant="Filled" />
                         <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Open" />
@@ -81,17 +79,45 @@
             <!-- </StackPanel> -->
             <ui:TitleBar Grid.Column="2" />
         </Grid>
-        
+
         <Grid Grid.Column="0" Grid.Row="1">
             <ui:Card Margin="8">
                 <StackPanel>
-                    <StackPanel Style="{StaticResource FiltersRow}">
-                        <ui:TextBlock FontSize="16" FontWeight="Bold" Text="Layers"/>
-                    </StackPanel>
+                    <Grid Margin="0 0 0 16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock FontSize="16" FontWeight="Bold" Text="Layers" />
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <StackPanel.Resources>
+                                <Style x:Key="LayersButtons" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                    <Setter Property="Padding" Value="4"/>
+                                    <Setter Property="Margin" Value="4 0 0 0"></Setter>
+                                </Style>
+                            </StackPanel.Resources>
+                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding OpenImageDialogCommand}">
+                                <wpf:FluentIcon Icon="Add" IconVariant="Filled" />
+                            </ui:Button>
+                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DuplicateLayerCommand}"
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                                <wpf:FluentIcon Icon="Copy" IconVariant="Filled" />
+                            </ui:Button>
+                            <ui:Button Style="{StaticResource LayersButtons}" 
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                                <wpf:FluentIcon Icon="Settings" IconVariant="Filled" />
+                            </ui:Button>
+                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DeleteLayerCommand}"
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                                <wpf:FluentIcon Icon="Subtract" IconVariant="Filled" />
+                            </ui:Button>
+                        </StackPanel>
+                    </Grid>
                     <ui:ListView SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
                         <ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type entities:GraphicObject}">
-                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text="{Binding Name}" Margin="4 0 0 0"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ui:ListView>
@@ -107,13 +133,16 @@
 
             <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
                           Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
-            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
-                
-            </Grid>
+            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
 
         <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding ImageIsOpened}">
             <StackPanel>
+                <StackPanel.Resources>
+                    <Style x:Key="FiltersRow" TargetType="StackPanel">
+                        <Setter Property="Margin" Value="0 0 0 16"></Setter>
+                    </Style>
+                </StackPanel.Resources>
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <ui:TextBlock FontSize="16" FontWeight="Bold">Filters</ui:TextBlock>
                 </StackPanel>

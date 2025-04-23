@@ -38,6 +38,8 @@ public class MainViewModel : PropertyObject
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
         OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
+        DeleteLayerCommand = new RelayCommand(OnDeleteLayerCommandExecuted, CanDeleteLayerCommandExecute);
+        DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
     }
 
     public ReadOnlyObservableCollection<GraphicObject> Layers { get; }
@@ -125,17 +127,43 @@ public class MainViewModel : PropertyObject
         var dialog = new OpenFileDialog
         {
             Multiselect = false,
-            Filter = "Image files (*.png;*.jpeg,*.jpg,*.bmp)|*.png;*.jpeg;*.jpg;*.bmp"
+            Filter = "Image files (*.png;*.jpeg,*.jpg,*.tiff)|*.png;*.jpeg;*.jpg;*.tiff;*tif"
         };
 
         var result = dialog.ShowDialog();
         if (result is not true)
             return;
 
-        _model.AddLayerFromFiles(dialog.FileName);
+        _model.AddLayerFromFile(dialog.FileName);
     }
 
     private bool CanOpenImageDialogCommandExecute() => true;
+
+    #endregion
+
+    #region DeleteLayer
+
+    public ICommand DeleteLayerCommand { get; set; }
+
+    private void OnDeleteLayerCommandExecuted()
+    {
+        _model.DeleteLayer();
+    }
+
+    private bool CanDeleteLayerCommandExecute() => true;
+
+    #endregion
+
+    #region DuplicateLayer
+
+    public ICommand DuplicateLayerCommand { get; set; }
+
+    private void OnDuplicateLayerCommandExecuted()
+    {
+        _model.DuplicateLayer();
+    }
+
+    private bool CanDuplicateLayerCommandExecute() => true;
 
     #endregion
 
