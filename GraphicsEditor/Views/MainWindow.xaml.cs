@@ -5,6 +5,7 @@ using GraphicsEditor.Infrastructure;
 using GraphicsEditor.ViewModels;
 using OpenCvSharp.WpfExtensions;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace GraphicsEditor.Views;
 
@@ -19,7 +20,12 @@ public partial class MainWindow
     {
         DataContext = viewModel;
         InitializeComponent();
-        ApplicationThemeManager.Apply(this);
+        ExtendsContentIntoTitleBar = true;
+        Loaded += (_, _) =>
+        {
+            SystemThemeWatcher.Watch(this);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.Tabbed);
+        };
     }
 
     private void MainWindow_OnInitialized(object? sender, EventArgs e)
@@ -52,4 +58,10 @@ public partial class MainWindow
     private void ImagesGrid_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Hidden;
 
     private void ImagesGrid_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Visible;
+
+    private void DraggingTitle_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if(e.ChangedButton == MouseButton.Left)
+            DragMove();
+    }
 }
