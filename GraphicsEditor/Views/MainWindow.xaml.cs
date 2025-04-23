@@ -35,14 +35,16 @@ public partial class MainWindow
 
     private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
     {
-        if ((e.PropertyName is nameof(ViewModel.OriginImage) or nameof(ViewModel.EditedImage) or nameof(ViewModel.Filters)) && ViewModel.ImageIsOpened)
+        if (e.PropertyName is nameof(ViewModel.Filters) && ViewModel.ImageIsOpened)
             Dispatcher.InvokeAsync(RefreshCanvases);
     }
 
     private void RefreshCanvases()
     {
-        Origin.Source = ViewModel.OriginImage.ToWriteableBitmap();
-        Edited.Source = ViewModel.EditedImage.ToWriteableBitmap();
+        LayersGrid.Children.Clear();
+
+        foreach (var layer in ViewModel.Layers)
+            LayersGrid.Children.Add(new Image { Source = layer.Filtered.ToWriteableBitmap() });
     }
 
     private void GrayscaleDefaultButton_OnClick(object sender, RoutedEventArgs e) => GrayscaleSlider.Value = DefaultFilterValues.DefaultGrayscalePercent;
@@ -51,17 +53,9 @@ public partial class MainWindow
 
     private void ContrastDefaultButton_OnClick(object sender, RoutedEventArgs e) => ContrastSlider.Value = DefaultFilterValues.DefaultContrastPercent;
 
-    private void HidePreviewButton_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Hidden;
-
-    private void HidePreviewButton_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Visible;
-
-    private void ImagesGrid_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Hidden;
-
-    private void ImagesGrid_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) => Edited.Visibility = Visibility.Visible;
-
     private void DraggingTitle_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if(e.ChangedButton == MouseButton.Left)
+        if (e.ChangedButton == MouseButton.Left)
             DragMove();
     }
 }

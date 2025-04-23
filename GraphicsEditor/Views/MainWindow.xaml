@@ -8,8 +8,9 @@
                  xmlns:infrastructure="clr-namespace:GraphicsEditor.Infrastructure"
                  xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:entities="clr-namespace:GraphicsEditor.Entities"
                  mc:Ignorable="d"
-                 Title="MainWindow" MinHeight="450" MinWidth="800" Height="450" Width="800"
+                 Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.Resources>
@@ -21,13 +22,17 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+            <Style x:Key="FiltersRow" TargetType="StackPanel">
+                <Setter Property="Margin" Value="0 0 0 16"></Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="256px"/>
             <ColumnDefinition />
+            <ColumnDefinition Width="256px"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -35,7 +40,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid Grid.ColumnSpan="2">
+        <Grid Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -76,8 +81,25 @@
             <!-- </StackPanel> -->
             <ui:TitleBar Grid.Column="2" />
         </Grid>
+        
+        <Grid Grid.Column="0" Grid.Row="1">
+            <ui:Card Margin="8">
+                <StackPanel>
+                    <StackPanel Style="{StaticResource FiltersRow}">
+                        <ui:TextBlock FontSize="16" FontWeight="Bold" Text="Layers"/>
+                    </StackPanel>
+                    <ui:ListView SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type entities:GraphicObject}">
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ui:ListView>
+                </StackPanel>
+            </ui:Card>
+        </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Column="1" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -85,18 +107,12 @@
 
             <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
                           Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
-            <Grid Grid.Row="1" Margin="8" x:Name="ImagesGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Image x:Name="Origin" />
-                <Image x:Name="Edited" />
+            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
             </Grid>
         </Grid>
 
-        <ui:Card Grid.Row="1" Grid.Column="1" Margin="8" IsEnabled="{Binding ImageIsOpened}">
-            <ui:Card.Resources>
-                <Style x:Key="FiltersRow" TargetType="StackPanel">
-                    <Setter Property="Margin" Value="0 0 0 16"></Setter>
-                </Style>
-            </ui:Card.Resources>
+        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding ImageIsOpened}">
             <StackPanel>
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <ui:TextBlock FontSize="16" FontWeight="Bold">Filters</ui:TextBlock>
@@ -105,7 +121,7 @@
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
                         <ui:TextBlock Text="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
-                        <ui:Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22"
+                        <ui:Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22" Width="22"
                                    Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                         </ui:Button>
@@ -120,7 +136,7 @@
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
                         <ui:TextBlock Text="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
-                        <ui:Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22"
+                        <ui:Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22" Width="22"
                                    Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                         </ui:Button>
@@ -135,7 +151,7 @@
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
                         <ui:TextBlock Text="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
-                        <ui:Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0"
+                        <ui:Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0" Width="22"
                                    Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
                         </ui:Button>

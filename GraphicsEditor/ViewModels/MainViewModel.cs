@@ -33,15 +33,21 @@ public class MainViewModel : PropertyObject
             }
         };
 
+        Layers = new ReadOnlyObservableCollection<GraphicObject>(_model.Layers);
+
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
         OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
     }
 
-    public Mat OriginImage => _model.MainSpace.Original;
-    
-    public Mat EditedImage => _model.MainSpace.Filtered;
-    
+    public ReadOnlyObservableCollection<GraphicObject> Layers { get; }
+
+    public GraphicObject SelectedLayer
+    {
+        get => _model.SelectedLayer;
+        set => _model.SelectLayer(value);
+    }
+
     public IReadOnlyDictionary<Filter, float> Filters
     {
         get
@@ -54,18 +60,20 @@ public class MainViewModel : PropertyObject
     }
 
     public bool GrayscaleIsEnabled => Grayscale != DefaultFilterValues.DefaultGrayscalePercent;
+
     public int Grayscale
     {
         get => _model.Filters[Filter.Grayscale].ToPercentage();
         set
         {
-            _model.SetFilterAsync(Filter.Grayscale, value.FromPercentage()); 
+            _model.SetFilterAsync(Filter.Grayscale, value.FromPercentage());
             OnPropertyChanged(nameof(GrayscaleIsEnabled));
             OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
 
     public bool BrightnessIsEnabled => Brightness != DefaultFilterValues.DefaultBrightnessPercent;
+
     public int Brightness
     {
         get => (int)_model.Filters[Filter.Brightness];
@@ -78,6 +86,7 @@ public class MainViewModel : PropertyObject
     }
 
     public bool ContrastIsEnabled => Contrast != DefaultFilterValues.DefaultContrastPercent;
+
     public int Contrast
     {
         get => _model.Filters[Filter.Contrast].ToPercentage();
@@ -90,9 +99,9 @@ public class MainViewModel : PropertyObject
     }
 
     public bool ImageIsOpened => _model.ImageIsOpened;
-    
+
     public bool ImageIsChanged => _model.ImageIsOpened && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
-    
+
     #region ResetCommand
 
     public ICommand ResetCommand { get; set; }
@@ -123,7 +132,7 @@ public class MainViewModel : PropertyObject
         if (result is not true)
             return;
 
-        _model.OpenImage(dialog.FileName);
+        _model.AddLayerFromFiles(dialog.FileName);
     }
 
     private bool CanOpenImageDialogCommandExecute() => true;
@@ -139,11 +148,11 @@ public class MainViewModel : PropertyObject
         var dialog = new SaveFileDialog();
         dialog.FileName = "Untitled";
         dialog.Filter = "Png files (*.png)|*.png|Jpeg files (*.jpeg)|*.jpeg|Tiff files (*.tiff)|*.tiff";
-        
+
         var result = dialog.ShowDialog();
         if (result is not true)
             return;
-        
+
         await _model.SaveImage(dialog.FileName);
     }
 

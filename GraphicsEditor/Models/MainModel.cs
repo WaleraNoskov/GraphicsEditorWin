@@ -20,19 +20,21 @@ public class MainModel : PropertyObject
         _filtersService = filtersService;
         _savingService = savingService;
 
-        MainSpace = new Space();
-        ResetFilters();
-        Filters = new ReadOnlyDictionary<Filter, float>(MainSpace.Filters);
+        SelectedLayer = new GraphicObject();
+        ResetFilters(SelectedLayer);
+        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer.Filters);
     }
 
-    #region MainSpace
+    public ObservableCollection<GraphicObject> Layers { get; set; } = [];
 
-    private Space _mainSpace;
+    #region SelectedLayer
 
-    public Space MainSpace
+    private GraphicObject _selectedLayer;
+
+    public GraphicObject SelectedLayer
     {
-        get => _mainSpace;
-        private set => SetField(ref _mainSpace, value);
+        get => _selectedLayer;
+        private set => SetField(ref _selectedLayer, value);
     }
 
     #endregion
@@ -56,31 +58,32 @@ public class MainModel : PropertyObject
 
     public void SetFilterAsync(Filter filter, float mix)
     {
-        if (!MainSpace.Filters.ContainsKey(filter))
-            MainSpace.Filters.TryAdd(filter, mix);
+        if (!SelectedLayer.Filters.ContainsKey(filter))
+            SelectedLayer.Filters.TryAdd(filter, mix);
 
-        MainSpace.Filters[filter] = mix;
+        SelectedLayer.Filters[filter] = mix;
 
-        ReApplyAllFilters();
+        ReApplyAllFilters(SelectedLayer);
         OnPropertyChanged(nameof(Filters));
     }
 
-    public void ResetAndReapplyFilters()
+    public void ResetAndReapplyFilters(GraphicObject? layer = null)
     {
-        ResetFilters();
-        ReApplyAllFilters();
+        ResetFilters(layer ?? SelectedLayer);
+        ReApplyAllFilters(layer ?? SelectedLayer);
 
         OnPropertyChanged(nameof(Filters));
     }
 
-    public void OpenImage(string path)
+    public void AddLayerFromFiles(string path)
     {
-        MainSpace?.Dispose();
-        MainSpace = new Space(path);
+        var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
+        Layers.Add(layer);
+        ResetAndReapplyFilters(layer);
+        
+        SelectLayer(layer);
+        
         ImageIsOpened = true;
-
-        Filters = new ReadOnlyDictionary<Filter, float>(_mainSpace.Filters);
-        ResetAndReapplyFilters();
     }
 
     public async Task<bool> SaveImage(string path)
@@ -90,21 +93,29 @@ public class MainModel : PropertyObject
         return extension switch
         {
             ".jpeg" or ".jpg"
-                => _savingService.SaveAsJpg(MainSpace.Filtered, path, 100),
+                => _savingService.SaveAsJpg(SelectedLayer.Filtered, path, 100),
             ".png"
-                => _savingService.SaveAsPng(MainSpace.Filtered, path, 0),
+                => _savingService.SaveAsPng(SelectedLayer.Filtered, path, 0),
             ".tiff"
-                => _savingService.SaveAsTiff(MainSpace.Filtered, path),
+                => _savingService.SaveAsTiff(SelectedLayer.Filtered, path),
             _ => false
         };
     }
 
-    private void ReApplyAllFilters()
+    public void SelectLayer(GraphicObject layer)
     {
-        MainSpace.Filtered.Dispose();
-        MainSpace.Filtered = MainSpace.Original.Clone();
+        SelectedLayer = layer;
+        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer.Filters);
+        
+        OnPropertyChanged(nameof(Filters));
+    }
+    
+    private void ReApplyAllFilters(GraphicObject layer)
+    {
+        layer.Filtered.Dispose();
+        layer.Filtered = layer.Original.Clone();
 
-        foreach (var filter in MainSpace.Filters)
+        foreach (var filter in layer.Filters)
         {
             Action<Mat, float>? filteringAction = filter.Key switch
             {
@@ -113,22 +124,22 @@ public class MainModel : PropertyObject
                 _ => null
             };
 
-            filteringAction?.Invoke(MainSpace.Filtered, filter.Value);
+            filteringAction?.Invoke(layer.Filtered, filter.Value);
         }
 
-        var foundContrast = MainSpace.Filters.TryGetValue(Filter.Contrast, out var contrast);
-        var foundBrightness = MainSpace.Filters.TryGetValue(Filter.Brightness, out var brightness);
+        var foundContrast = layer.Filters.TryGetValue(Filter.Contrast, out var contrast);
+        var foundBrightness = layer.Filters.TryGetValue(Filter.Brightness, out var brightness);
 
-        _filtersService.ApplyBrightnessAndContrast(MainSpace.Filtered, foundContrast ? contrast : 1, foundBrightness ? brightness : 0);
+        _filtersService.ApplyBrightnessAndContrast(layer.Filtered, foundContrast ? contrast : 1, foundBrightness ? brightness : 0);
     }
 
-    private void ResetFilters()
+    private static void ResetFilters(GraphicObject layer)
     {
-        MainSpace.Filters.Clear();
+        layer.Filters.Clear();
 
-        MainSpace.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
-        MainSpace.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
-        MainSpace.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);
-        MainSpace.Filters.Add(Filter.Alpha, DefaultFilterValues.DefaultAlpha);
+        layer.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
+        layer.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
+        layer.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);
+        layer.Filters.Add(Filter.Alpha, DefaultFilterValues.DefaultAlpha);
     }
 }
