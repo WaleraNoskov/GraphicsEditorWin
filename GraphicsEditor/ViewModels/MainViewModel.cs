@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.Input;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
@@ -33,8 +34,6 @@ public class MainViewModel : PropertyObject
             }
         };
 
-        Layers = new ReadOnlyObservableCollection<GraphicObject>(_model.Layers);
-
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
         OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
@@ -42,7 +41,7 @@ public class MainViewModel : PropertyObject
         DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
     }
 
-    public ReadOnlyObservableCollection<GraphicObject> Layers { get; }
+    public ObservableCollection<GraphicObject> Layers => _model.Layers;
 
     public GraphicObject SelectedLayer
     {

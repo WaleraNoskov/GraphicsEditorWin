@@ -118,7 +118,7 @@
                             </ui:Button>
                         </StackPanel>
                     </Grid>
-                    <ui:ListView x:Name="LayersListView" SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers, Converter={StaticResource LayersConverter}}">
+                    <ui:ListView x:Name="LayersListView" SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
                         <ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type entities:GraphicObject}">
                                 <TextBlock Text="{Binding Name}" Margin="4 0 0 0" />
