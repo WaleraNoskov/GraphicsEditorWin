@@ -39,21 +39,6 @@ public class MainModel : PropertyObject
 
     #endregion
 
-    #region ImageIsOpened : bool
-
-    private bool _imageIsOpened;
-
-    /// <summary> 
-    /// description 
-    /// </summary>
-    public bool ImageIsOpened
-    {
-        get => _imageIsOpened;
-        set => SetField(ref _imageIsOpened, value);
-    }
-
-    #endregion ImageIsOpened
-
     public IReadOnlyDictionary<Filter, float> Filters { get; private set; }
 
     public void SetFilterAsync(Filter filter, float mix)
@@ -79,9 +64,6 @@ public class MainModel : PropertyObject
     {
         var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
         Layers.Add(layer);
-    
-        ImageIsOpened = true;
-        
         ResetAndReapplyFilters(layer);
         SelectLayer(layer);
     }
@@ -92,7 +74,11 @@ public class MainModel : PropertyObject
             return;
         
         var layerToDelete = SelectedLayer;
-        SelectedLayer = null;
+        var layerToDeleteIndex = Layers.IndexOf(layerToDelete);
+        if(Layers.Count > 1 && layerToDeleteIndex > 0)
+            SelectLayer(Layers[layerToDeleteIndex - 1]);
+        if(Layers.Count > 1 && layerToDeleteIndex < Layers.Count - 1)
+            SelectLayer(Layers[layerToDeleteIndex + 1]);
         
         Layers.Remove(layerToDelete);
         layerToDelete.Dispose();

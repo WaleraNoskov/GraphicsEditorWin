@@ -99,10 +99,8 @@ public class MainViewModel : PropertyObject
             OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
-
-    public bool ImageIsOpened => _model.ImageIsOpened;
-
-    public bool ImageIsChanged => _model.ImageIsOpened && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
+    
+    public bool ImageIsChanged => SelectedLayer is not null && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
 
     #region ResetCommand
 

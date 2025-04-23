@@ -1,17 +1,13 @@
 ﻿using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
-namespace GraphicsEditor.Infrastructure;
+namespace GraphicsEditor.Infrastructure.Converters;
 
-public class InvertedBooleanToVisibilityConverter : IValueConverter
+public class NullToEnabledConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not bool boolValue)
-            return Visibility.Collapsed;
-        
-        return boolValue ? Visibility.Collapsed : Visibility.Visible;
+        return value is not null;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

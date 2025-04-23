@@ -9,6 +9,7 @@
                  xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:entities="clr-namespace:GraphicsEditor.Entities"
+                 xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
                  mc:Ignorable="d"
                  Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
@@ -21,8 +22,11 @@
                 <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Wpf.Ui.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <infrastructure:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
-            <infrastructure:IsNullToEnabledConverter x:Key="IsNullToEnabledConverter"/>
+            <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+            <converters:NullToEnabledConverter x:Key="NullToEnabledConverter" />
+            <converters:InvertedNullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" />
+            <converters:EmptyToEnabledConverter x:Key="EmptyToEnabledConverter" />
+            <converters:LayersConverter x:Key="LayersConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -52,7 +56,7 @@
                         <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Open" />
                     </StackPanel>
                 </ui:Button>
-                <ui:Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding ImageIsOpened}">
+                <ui:Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding Layers, Converter={StaticResource EmptyToEnabledConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <wpf:FluentIcon Icon="Save" IconVariant="Filled" />
                         <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Save" />
@@ -93,7 +97,7 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                             <StackPanel.Resources>
                                 <Style x:Key="LayersButtons" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                    <Setter Property="Padding" Value="4"/>
+                                    <Setter Property="Padding" Value="4" />
                                     <Setter Property="Margin" Value="4 0 0 0"></Setter>
                                 </Style>
                             </StackPanel.Resources>
@@ -101,23 +105,23 @@
                                 <wpf:FluentIcon Icon="Add" IconVariant="Filled" />
                             </ui:Button>
                             <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DuplicateLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
                                 <wpf:FluentIcon Icon="Copy" IconVariant="Filled" />
                             </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}" 
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                            <ui:Button Style="{StaticResource LayersButtons}"
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
                                 <wpf:FluentIcon Icon="Settings" IconVariant="Filled" />
                             </ui:Button>
                             <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DeleteLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource IsNullToEnabledConverter}}">
+                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
                                 <wpf:FluentIcon Icon="Subtract" IconVariant="Filled" />
                             </ui:Button>
                         </StackPanel>
                     </Grid>
-                    <ui:ListView SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
+                    <ui:ListView x:Name="LayersListView" SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers, Converter={StaticResource LayersConverter}}">
                         <ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type entities:GraphicObject}">
-                                <TextBlock Text="{Binding Name}" Margin="4 0 0 0"/>
+                                <TextBlock Text="{Binding Name}" Margin="4 0 0 0" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ui:ListView>
@@ -132,11 +136,11 @@
             </Grid.RowDefinitions>
 
             <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Visibility="{Binding ImageIsOpened, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
-            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding ImageIsOpened, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                          Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
+            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>
 
-        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding ImageIsOpened}">
+        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
             <StackPanel>
                 <StackPanel.Resources>
                     <Style x:Key="FiltersRow" TargetType="StackPanel">

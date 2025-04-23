@@ -36,7 +36,7 @@ public class GraphicObject : IDisposable, ICloneable
     {
         return new GraphicObject
         {
-            Name = Name,
+            Name = Name + "(copy)",
             Original = Original.Clone(),
             Filtered = Filtered.Clone(),
             Filters = new Dictionary<Filter, float>(Filters)
