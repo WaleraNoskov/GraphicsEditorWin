@@ -3,13 +3,11 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:local="clr-namespace:GraphicsEditor"
                  xmlns:viewModels="clr-namespace:GraphicsEditor.ViewModels"
-                 xmlns:infrastructure="clr-namespace:GraphicsEditor.Infrastructure"
                  xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-                 xmlns:entities="clr-namespace:GraphicsEditor.Entities"
                  xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
+                 xmlns:controls="clr-namespace:GraphicsEditor.Controls"
                  mc:Ignorable="d"
                  Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
@@ -21,12 +19,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Theme/light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Wpf.Ui.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
             <converters:NullToEnabledConverter x:Key="NullToEnabledConverter" />
-            <converters:InvertedNullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" />
             <converters:EmptyToEnabledConverter x:Key="EmptyToEnabledConverter" />
-            <converters:LayersConverter x:Key="LayersConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -80,131 +74,16 @@
 
         <Grid Grid.Column="0" Grid.Row="1">
             <ui:Card Margin="8">
-                <StackPanel>
-                    <Grid Margin="0 0 0 16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBlock FontSize="16" FontWeight="Bold" Text="Layers" />
-
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <StackPanel.Resources>
-                                <Style x:Key="LayersButtons" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                    <Setter Property="Padding" Value="4" />
-                                    <Setter Property="Margin" Value="4 0 0 0"></Setter>
-                                </Style>
-                            </StackPanel.Resources>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding OpenImageDialogCommand}">
-                                <wpf:FluentIcon Icon="Add" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DuplicateLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Copy" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Settings" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DeleteLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Subtract" IconVariant="Filled" />
-                            </ui:Button>
-                        </StackPanel>
-                    </Grid>
-                    <ui:ListView x:Name="LayersListView" SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type entities:GraphicObject}">
-                                <TextBlock Text="{Binding Name}" Margin="4 0 0 0" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ui:ListView>
-                </StackPanel>
+                <controls:LayersControl DataContext="{Binding }"/>
             </ui:Card>
         </Grid>
 
-        <Grid x:Name="EditingAreaGrid" Grid.Column="1" Grid.Row="1" Background="#00000000" Margin="8">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <!-- <Canvas> -->
-            <!--     <Rectangle Width="{Binding ElementName=EditingAreaGrid, Path=ActualWidth, Mode=OneWay}"  -->
-            <!--                Height="{Binding ElementName=EditingAreaGrid, Path=ActualHeight, Mode=OneWay}"> -->
-            <!--         <Rectangle.Fill> -->
-            <!--             <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute"> -->
-            <!--                 <DrawingBrush.Drawing> -->
-            <!--                     <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="LightGray" /> -->
-            <!--                 </DrawingBrush.Drawing> -->
-            <!--             </DrawingBrush> -->
-            <!--         </Rectangle.Fill> -->
-            <!--     </Rectangle> -->
-            <!-- </Canvas> -->
-
-            <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
-            <Grid Grid.Row="1" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+        <Grid Grid.Column="1" Grid.Row="1" Margin="8">
+            <controls:EditingAreaControl x:Name="EditingAreaControl"/>
         </Grid>
 
         <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-            <StackPanel>
-                <StackPanel.Resources>
-                    <Style x:Key="FiltersRow" TargetType="StackPanel">
-                        <Setter Property="Margin" Value="0 0 0 16"></Setter>
-                    </Style>
-                </StackPanel.Resources>
-                <StackPanel Style="{StaticResource FiltersRow}">
-                    <ui:TextBlock FontSize="16" FontWeight="Bold">Filters</ui:TextBlock>
-                </StackPanel>
-
-                <StackPanel Style="{StaticResource FiltersRow}">
-                    <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
-                        <ui:Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22" Width="22"
-                                   Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                        </ui:Button>
-                    </StackPanel>
-                    <Slider x:Name="GrayscaleSlider"
-                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinGrayscalePercent}"
-                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxGrayscalePercent}"
-                            TickFrequency="1"
-                            Value="{Binding Grayscale}" />
-                </StackPanel>
-
-                <StackPanel Style="{StaticResource FiltersRow}">
-                    <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
-                        <ui:Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22" Width="22"
-                                   Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                        </ui:Button>
-                    </StackPanel>
-                    <Slider x:Name="BrightnessSlider"
-                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinBrightnessPercent}"
-                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxBrightnessPercent}"
-                            TickFrequency="1"
-                            Value="{Binding Brightness}" />
-                </StackPanel>
-
-                <StackPanel Style="{StaticResource FiltersRow}">
-                    <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
-                        <ui:Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0" Width="22"
-                                   Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
-                            <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
-                        </ui:Button>
-                    </StackPanel>
-                    <Slider x:Name="ContrastSlider"
-                            Minimum="{x:Static infrastructure:DefaultFilterValues.MinContrastPercent}"
-                            Maximum="{x:Static infrastructure:DefaultFilterValues.MaxContrastPercent}"
-                            TickFrequency="1"
-                            Value="{Binding Contrast}" />
-                </StackPanel>
-
-                <ui:Button HorizontalAlignment="Stretch" Content="Clear" Command="{Binding ResetCommand}" />
-            </StackPanel>
+           <controls:FiltersControl DataContext="{Binding }"/>
         </ui:Card>
     </Grid>
 </ui:FluentWindow>

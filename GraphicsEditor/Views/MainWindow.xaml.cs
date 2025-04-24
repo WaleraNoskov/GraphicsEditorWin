@@ -36,28 +36,10 @@ public partial class MainWindow
     private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
     {
         if ((e.PropertyName is nameof(ViewModel.Filters) or nameof(ViewModel.Layers)) && ViewModel.SelectedLayer is not null)
-            Dispatcher.InvokeAsync(RefreshCanvases);
+            Dispatcher.InvokeAsync(EditingAreaControl.RefreshCanvases);
     }
 
-    private void RefreshCanvases()
-    {
-        LayersGrid.Children.Clear();
-
-        if (!ViewModel.Layers.Any())
-            return;
-
-        foreach (var layer in ViewModel.Layers)
-            LayersGrid.Children.Add(new Image { Source = layer.Filtered.ToWriteableBitmap() });
-        
-        // for (var i = ViewModel.Layers.Count - 1; i >= 0; i--)
-        //     LayersGrid.Children.Add(new Image { Source = ViewModel.Layers[i].Filtered.ToWriteableBitmap() });
-    }
-
-    private void GrayscaleDefaultButton_OnClick(object sender, RoutedEventArgs e) => GrayscaleSlider.Value = DefaultFilterValues.DefaultGrayscalePercent;
-
-    private void BrightnessDefaultButton_OnClick(object sender, RoutedEventArgs e) => BrightnessSlider.Value = DefaultFilterValues.DefaultBrightnessPercent;
-
-    private void ContrastDefaultButton_OnClick(object sender, RoutedEventArgs e) => ContrastSlider.Value = DefaultFilterValues.DefaultContrastPercent;
+    
 
     private void DraggingTitle_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
