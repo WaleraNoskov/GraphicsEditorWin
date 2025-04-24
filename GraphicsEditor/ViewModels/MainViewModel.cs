@@ -41,14 +41,14 @@ public class MainViewModel : PropertyObject
         DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
     }
 
-    public ObservableCollection<GraphicObject> Layers => _model.Layers;
+    public ObservableCollection<GraphicObject> Layers => new(_model.ProjectInfo.Layers);
 
     public GraphicObject SelectedLayer
     {
         get => _model.SelectedLayer;
         set => _model.SelectLayer(value);
     }
-
+    
     public IReadOnlyDictionary<Filter, float> Filters
     {
         get

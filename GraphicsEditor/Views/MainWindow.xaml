@@ -64,7 +64,9 @@
                 </ui:Button>
             </StackPanel>
 
-            <Grid Grid.ColumnSpan="3" PreviewMouseDown="DraggingTitle_OnMouseDown" Background="#00000000">
+            <Grid Grid.ColumnSpan="3" 
+                  PreviewMouseDown="DraggingTitle_OnMouseDown"
+                  Background="#00000000">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
@@ -121,15 +123,28 @@
             </ui:Card>
         </Grid>
 
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid x:Name="EditingAreaGrid" Grid.Column="1" Grid.Row="1" Background="#00000000" Margin="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
+            <!-- <Canvas> -->
+            <!--     <Rectangle Width="{Binding ElementName=EditingAreaGrid, Path=ActualWidth, Mode=OneWay}"  -->
+            <!--                Height="{Binding ElementName=EditingAreaGrid, Path=ActualHeight, Mode=OneWay}"> -->
+            <!--         <Rectangle.Fill> -->
+            <!--             <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute"> -->
+            <!--                 <DrawingBrush.Drawing> -->
+            <!--                     <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="LightGray" /> -->
+            <!--                 </DrawingBrush.Drawing> -->
+            <!--             </DrawingBrush> -->
+            <!--         </Rectangle.Fill> -->
+            <!--     </Rectangle> -->
+            <!-- </Canvas> -->
+
             <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
                           Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
-            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+            <Grid Grid.Row="1" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>
 
         <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">

@@ -23,6 +23,16 @@ public class GraphicObject : IDisposable, ICloneable
         
         Filters = new Dictionary<Filter, float>();
     }
+
+    public GraphicObject(string name, int width, int height)
+    {
+        Name = name;
+        
+        Original = new Mat(new Size(width, height), MatType.CV_8UC4);
+        Filtered = Original.Clone();
+        
+        Filters = new Dictionary<Filter, float>();
+    }
     
     public GraphicObject()
     {

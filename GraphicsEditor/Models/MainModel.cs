@@ -20,12 +20,23 @@ public class MainModel : PropertyObject
         _filtersService = filtersService;
         _savingService = savingService;
 
-        SelectLayer(new GraphicObject());
-        SelectLayer(null);
+        ProjectInfo = new ProjectInfo("Untitled");
+
+        SelectLayer(ProjectInfo.Layers.First());
     }
 
-    public ObservableCollection<GraphicObject> Layers { get; set; } = [];
+    #region ProjectInfo : ProjectInfo
 
+    private ProjectInfo _projectInfo;
+    
+    public ProjectInfo ProjectInfo
+    {
+        get => _projectInfo;
+        private set => SetField(ref _projectInfo, value);
+    }
+
+    #endregion ProjectInfo
+    
     #region SelectedLayer
 
     private GraphicObject _selectedLayer;
@@ -61,10 +72,21 @@ public class MainModel : PropertyObject
 
     public void AddLayerFromFile(string path)
     {
-        var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
-        Layers.Add(layer);
+        var layer = new GraphicObject($"Layer {ProjectInfo.Layers.Count + 1}",path);
+
+        if (!ProjectInfo.Layers.Any())
+        {
+            ProjectInfo.Width = layer.Original.Width;
+            ProjectInfo.Height = layer.Original.Height;
+        }
+
+        ProjectInfo.Layers.Add(layer);
         ResetAndReapplyFilters(layer);
         SelectLayer(layer);
+        
+        OnPropertyChanged(nameof(ProjectInfo.Width));
+        OnPropertyChanged(nameof(ProjectInfo.Height));
+        OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
     public void DeleteLayer()
@@ -73,16 +95,16 @@ public class MainModel : PropertyObject
             return;
         
         var layerToDelete = SelectedLayer;
-        var layerToDeleteIndex = Layers.IndexOf(layerToDelete);
-        if(Layers.Count > 1 && layerToDeleteIndex > 0)
-            SelectLayer(Layers[layerToDeleteIndex - 1]);
-        if(Layers.Count > 1 && layerToDeleteIndex < Layers.Count - 1)
-            SelectLayer(Layers[layerToDeleteIndex + 1]);
+        var layerToDeleteIndex = ProjectInfo.Layers.IndexOf(layerToDelete);
+        if(ProjectInfo.Layers.Count > 1 && layerToDeleteIndex > 0)
+            SelectLayer(ProjectInfo.Layers[layerToDeleteIndex - 1]);
+        if(ProjectInfo.Layers.Count > 1 && layerToDeleteIndex < ProjectInfo.Layers.Count - 1)
+            SelectLayer(ProjectInfo.Layers[layerToDeleteIndex + 1]);
         
-        Layers.Remove(layerToDelete);
+        ProjectInfo.Layers.Remove(layerToDelete);
         layerToDelete.Dispose();
         
-        OnPropertyChanged(nameof(Layers));
+        OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
     public void DuplicateLayer()
@@ -91,9 +113,11 @@ public class MainModel : PropertyObject
             return;
 
         var duplicate = (GraphicObject)SelectedLayer.Clone();
-        Layers.Add(duplicate);
+        ProjectInfo.Layers.Add(duplicate);
         SelectLayer(duplicate);
         ReApplyAllFilters(duplicate);
+        
+        OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
     
     public async Task<bool> SaveImage(string path)
