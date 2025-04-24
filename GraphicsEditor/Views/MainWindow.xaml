@@ -50,7 +50,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel ZIndex="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8 0 0 0">
-                <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}" Visibility="Collapsed">
+                <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
                     <StackPanel Orientation="Horizontal">
                         <wpf:FluentIcon Icon="Open" IconVariant="Filled" />
                         <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Open" />
@@ -73,14 +73,6 @@
 
                 <TextBlock Grid.Column="1" Text="Graphics Editor" VerticalAlignment="Center" />
             </Grid>
-
-            <!-- <StackPanel Grid.Column="2" Visibility="{Binding ImageIsChanged, Converter={StaticResource BooleanToVisibilityConverter}}"> -->
-            <!--     <ui:Button Height="32" Width="32" Padding="0" x:Name="HidePreviewButton" -->
-            <!--                PreviewMouseDown="HidePreviewButton_OnPreviewMouseDown" -->
-            <!--                PreviewMouseUp="HidePreviewButton_OnPreviewMouseUp"> -->
-            <!--         <wpf:FluentIcon Icon="Eye"></wpf:FluentIcon> -->
-            <!--     </ui:Button> -->
-            <!-- </StackPanel> -->
             <ui:TitleBar Grid.Column="2" />
         </Grid>
 

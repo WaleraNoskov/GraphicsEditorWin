@@ -20,9 +20,8 @@ public class MainModel : PropertyObject
         _filtersService = filtersService;
         _savingService = savingService;
 
-        SelectedLayer = new GraphicObject();
-        ResetFilters(SelectedLayer);
-        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer.Filters);
+        SelectLayer(new GraphicObject());
+        SelectLayer(null);
     }
 
     public ObservableCollection<GraphicObject> Layers { get; set; } = [];
@@ -116,11 +115,7 @@ public class MainModel : PropertyObject
     public void SelectLayer(GraphicObject layer)
     {
         SelectedLayer = layer;
-        
-        if(layer is null)
-            return;
-        
-        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer.Filters);
+        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer?.Filters ?? new Dictionary<Filter, float>());
         
         OnPropertyChanged(nameof(Filters));
     }

@@ -64,7 +64,9 @@ public class MainViewModel : PropertyObject
 
     public int Grayscale
     {
-        get => _model.Filters[Filter.Grayscale].ToPercentage();
+        get => _model.Filters.ContainsKey(Filter.Grayscale)
+            ? _model.Filters[Filter.Grayscale].ToPercentage()
+            : DefaultFilterValues.DefaultGrayscale.ToPercentage();
         set
         {
             _model.SetFilterAsync(Filter.Grayscale, value.FromPercentage());
@@ -77,7 +79,9 @@ public class MainViewModel : PropertyObject
 
     public int Brightness
     {
-        get => (int)_model.Filters[Filter.Brightness];
+        get => _model.Filters.ContainsKey(Filter.Brightness)
+            ? _model.Filters[Filter.Brightness].ToPercentage()
+            : DefaultFilterValues.DefaultBrightness.ToPercentage();
         set
         {
             _model.SetFilterAsync(Filter.Brightness, value);
@@ -90,7 +94,9 @@ public class MainViewModel : PropertyObject
 
     public int Contrast
     {
-        get => _model.Filters[Filter.Contrast].ToPercentage();
+        get => _model.Filters.ContainsKey(Filter.Contrast)
+            ? _model.Filters[Filter.Contrast].ToPercentage()
+            : DefaultFilterValues.DefaultContrast.ToPercentage();
         set
         {
             _model.SetFilterAsync(Filter.Contrast, value.FromPercentage());
@@ -98,7 +104,7 @@ public class MainViewModel : PropertyObject
             OnPropertyChanged(nameof(ImageIsChanged));
         }
     }
-    
+
     public bool ImageIsChanged => SelectedLayer is not null && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
 
     #region ResetCommand
