@@ -116,6 +116,10 @@ public class MainModel : PropertyObject
     public void SelectLayer(GraphicObject layer)
     {
         SelectedLayer = layer;
+        
+        if(layer is null)
+            return;
+        
         Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer.Filters);
         
         OnPropertyChanged(nameof(Filters));
