@@ -80,8 +80,8 @@ public class MainViewModel : PropertyObject
     public int Brightness
     {
         get => _model.Filters.ContainsKey(Filter.Brightness)
-            ? _model.Filters[Filter.Brightness].ToPercentage()
-            : DefaultFilterValues.DefaultBrightness.ToPercentage();
+            ? Convert.ToInt32(_model.Filters[Filter.Brightness])
+            : Convert.ToInt32(DefaultFilterValues.DefaultBrightness);
         set
         {
             _model.SetFilterAsync(Filter.Brightness, value);
