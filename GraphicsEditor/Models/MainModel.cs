@@ -20,7 +20,7 @@ public class MainModel : PropertyObject
         _selectionService = selectionService;
 
         ProjectInfo = new ProjectInfo("Untitled");
-        
+
         ResetAndReapplyFilters(ProjectInfo.Layers.First());
         SelectLayer(ProjectInfo.Layers.First());
     }
@@ -28,7 +28,7 @@ public class MainModel : PropertyObject
     #region ProjectInfo : ProjectInfo
 
     private ProjectInfo _projectInfo;
-    
+
     public ProjectInfo ProjectInfo
     {
         get => _projectInfo;
@@ -36,7 +36,7 @@ public class MainModel : PropertyObject
     }
 
     #endregion ProjectInfo
-    
+
     #region SelectedLayer
 
     private GraphicObject _selectedLayer;
@@ -72,7 +72,7 @@ public class MainModel : PropertyObject
 
     public void AddLayerFromFile(string path)
     {
-        var layer = new GraphicObject($"Layer {ProjectInfo.Layers.Count + 1}",path);
+        var layer = new GraphicObject($"Layer {ProjectInfo.Layers.Count + 1}", path);
 
         if (!ProjectInfo.Layers.Any())
         {
@@ -83,7 +83,7 @@ public class MainModel : PropertyObject
         ProjectInfo.Layers.Add(layer);
         ResetAndReapplyFilters(layer);
         SelectLayer(layer);
-        
+
         OnPropertyChanged(nameof(ProjectInfo.Width));
         OnPropertyChanged(nameof(ProjectInfo.Height));
         OnPropertyChanged(nameof(ProjectInfo.Layers));
@@ -91,19 +91,19 @@ public class MainModel : PropertyObject
 
     public void DeleteLayer()
     {
-        if(SelectedLayer is null)
+        if (SelectedLayer is null)
             return;
-        
+
         var layerToDelete = SelectedLayer;
         var layerToDeleteIndex = ProjectInfo.Layers.IndexOf(layerToDelete);
-        if(ProjectInfo.Layers.Count > 1 && layerToDeleteIndex > 0)
+        if (ProjectInfo.Layers.Count > 1 && layerToDeleteIndex > 0)
             SelectLayer(ProjectInfo.Layers[layerToDeleteIndex - 1]);
-        if(ProjectInfo.Layers.Count > 1 && layerToDeleteIndex < ProjectInfo.Layers.Count - 1)
+        if (ProjectInfo.Layers.Count > 1 && layerToDeleteIndex < ProjectInfo.Layers.Count - 1)
             SelectLayer(ProjectInfo.Layers[layerToDeleteIndex + 1]);
-        
+
         ProjectInfo.Layers.Remove(layerToDelete);
         layerToDelete.Dispose();
-        
+
         OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
@@ -116,10 +116,10 @@ public class MainModel : PropertyObject
         ProjectInfo.Layers.Add(duplicate);
         SelectLayer(duplicate);
         ReApplyAllFilters(duplicate);
-        
+
         OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
-    
+
     public async Task<bool> SaveImage(string path)
     {
         var extension = Path.GetExtension(path);
@@ -140,7 +140,7 @@ public class MainModel : PropertyObject
     {
         SelectedLayer = layer;
         Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer?.Filters ?? new Dictionary<Filter, float>());
-        
+
         OnPropertyChanged(nameof(Filters));
     }
 
@@ -154,38 +154,46 @@ public class MainModel : PropertyObject
     {
         var layer = (SelectedLayer.Clone() as GraphicObject)!;
         Crop(layer, selectionArea);
-        
+
         _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
         _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
         ReApplyAllFilters(SelectedLayer);
-        
+
         ProjectInfo.Layers.Insert(ProjectInfo.Layers.IndexOf(SelectedLayer), layer);
         SelectLayer(layer);
-        
+
         OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
     private void Crop(GraphicObject layer, SelectionArea selectionArea)
     {
-        selectionArea.Left = Math.Max(0, selectionArea.Left);
-        selectionArea.Top = Math.Max(0, selectionArea.Top);
-        selectionArea.Width = Math.Min(layer.Original.Width, selectionArea.Width - 1);
-        selectionArea.Height = Math.Min(layer.Original.Height, selectionArea.Height -1);
-        
-        var cropped = _selectionService.GetSquare(layer.Original, selectionArea);
-        
+        var correctedSelectionArea = new SelectionArea(
+            Math.Max(0, selectionArea.Top),
+            Math.Max(0, selectionArea.Left),
+            Math.Min(layer.Original.Width, selectionArea.Width - 1),
+            Math.Min(layer.Original.Height, selectionArea.Height - 1)
+        );
+        if(selectionArea.Left < 0)
+            correctedSelectionArea.Width += selectionArea.Left;
+        if(selectionArea.Top < 0)
+            correctedSelectionArea.Height += selectionArea.Top;
+
+        var cropped = _selectionService.GetSquare(layer.Original, correctedSelectionArea);
+
         layer.Original.Dispose();
         layer.Original = cropped;
-        
+
         layer.Filtered.Dispose();
         layer.Filtered = cropped.Clone();
-        
-        layer.Left = selectionArea.Left;
-        layer.Top = selectionArea.Top;
-        
+
+        if(selectionArea.Left >= 0)
+            layer.Left = selectionArea.Left;
+        if(selectionArea.Top >= 0)
+            layer.Top = selectionArea.Top;
+
         ReApplyAllFilters(layer);
     }
-    
+
     private void ReApplyAllFilters(GraphicObject layer)
     {
         layer.Filtered.Dispose();
