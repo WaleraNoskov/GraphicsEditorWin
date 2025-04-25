@@ -11,11 +11,13 @@ public class MainModel : PropertyObject
 {
     private readonly IFiltersService _filtersService;
     private readonly ISavingService _savingService;
+    private readonly ISelectionService _selectionService;
 
-    public MainModel(IFiltersService filtersService, ISavingService savingService)
+    public MainModel(IFiltersService filtersService, ISavingService savingService, ISelectionService selectionService)
     {
         _filtersService = filtersService;
         _savingService = savingService;
+        _selectionService = selectionService;
 
         ProjectInfo = new ProjectInfo("Untitled");
         
@@ -140,6 +142,44 @@ public class MainModel : PropertyObject
         Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer?.Filters ?? new Dictionary<Filter, float>());
         
         OnPropertyChanged(nameof(Filters));
+    }
+
+    public void CropLayer(SelectionArea selectionArea)
+    {
+        Crop(SelectedLayer, selectionArea);
+        OnPropertyChanged(nameof(ProjectInfo.Layers));
+    }
+
+    public void DivideNewLayer(SelectionArea selectionArea)
+    {
+        var layer = (SelectedLayer.Clone() as GraphicObject)!;
+        Crop(layer, selectionArea);
+        
+        _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
+        _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
+        ReApplyAllFilters(SelectedLayer);
+        
+        ProjectInfo.Layers.Insert(ProjectInfo.Layers.IndexOf(SelectedLayer), layer);
+        SelectLayer(layer);
+        
+        OnPropertyChanged(nameof(ProjectInfo.Layers));
+    }
+
+    private void Crop(GraphicObject layer, SelectionArea selectionArea)
+    {
+        selectionArea.Left = Math.Max(0, selectionArea.Left);
+        selectionArea.Top = Math.Max(0, selectionArea.Top);
+        selectionArea.Width = Math.Min(layer.Original.Width, selectionArea.Width);
+        selectionArea.Height = Math.Min(layer.Original.Height, selectionArea.Height);
+        var cropped = _selectionService.GetSquare(layer.Original, selectionArea);
+        
+        layer.Original.Dispose();
+        layer.Original = cropped;
+        
+        layer.Filtered.Dispose();
+        layer.Filtered = cropped.Clone();
+        
+        ReApplyAllFilters(layer);
     }
     
     private void ReApplyAllFilters(GraphicObject layer)

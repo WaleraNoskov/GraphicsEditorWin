@@ -9,7 +9,7 @@
                  xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
                  xmlns:controls="clr-namespace:GraphicsEditor.Views.Controls"
                  mc:Ignorable="d"
-                 Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
+                 Title="MainWindow" MinHeight="800" MinWidth="1280" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.Resources>
@@ -72,7 +72,7 @@
             <ui:TitleBar Grid.Column="2" />
         </Grid>
 
-        <Grid Grid.Column="0" Grid.Row="1">
+        <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
             <ui:Card Margin="8">
                 <controls:LayersControl DataContext="{Binding }"/>
             </ui:Card>
@@ -82,7 +82,7 @@
             <controls:EditingAreaControl x:Name="EditingAreaControl" DataContext="{Binding }"/>
         </Border>
 
-        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
+        <ui:Card VerticalAlignment="Top" Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
            <controls:FiltersControl DataContext="{Binding }"/>
         </ui:Card>
     </Grid>

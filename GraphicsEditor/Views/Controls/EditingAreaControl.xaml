@@ -5,11 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
-             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:viewModels="clr-namespace:GraphicsEditor.ViewModels"
-             xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
-             xmlns:controls="clr-namespace:GraphicsEditor.Views.Controls"
-             xmlns:WPFZoomPanel="https://github.com/Moravuscz/WPFZoomPanel"
+             xmlns:wpfZoomPanel="https://github.com/Moravuscz/WPFZoomPanel"
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
              Initialized="EditingAreaControl_OnInitialized">
     <Grid Background="#00000000" x:Name="MainContainer">
@@ -20,9 +17,6 @@
                     <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Theme/light.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Wpf.Ui.xaml" />
                 </ResourceDictionary.MergedDictionaries>
-                <converters:NullToEnabledConverter x:Key="NullToEnabledConverter" />
-                <converters:EmptyToEnabledConverter x:Key="EmptyToEnabledConverter" />
-                <converters:InvertedNullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" />
             </ResourceDictionary>
         </Grid.Resources>
 
@@ -30,7 +24,7 @@
             <Rectangle Width="{Binding ElementName=MainContainer, Path=ActualWidth, Mode=OneWay}"
                        Height="{Binding ElementName=MainContainer, Path=ActualHeight, Mode=OneWay}">
                 <Rectangle.Fill>
-                    <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
                         <DrawingBrush.Drawing>
                             <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="LightGray" />
                         </DrawingBrush.Drawing>
@@ -39,9 +33,21 @@
             </Rectangle>
         </Canvas>
 
-        <WPFZoomPanel:ZoomPanelScrollViewer BorderThickness="0" HorizontalScrollBarVisibility="Auto" ZoomAndPanInitialPosition="FitScreen">
-            <Grid x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
-        </WPFZoomPanel:ZoomPanelScrollViewer>
+        <wpfZoomPanel:ZoomPanelScrollViewer BorderThickness="0" HorizontalScrollBarVisibility="Auto" ZoomAndPanInitialPosition="FitScreen">
+            <Grid x:Name="theGrid"
+                  MouseDown="Grid_MouseDown"
+                  MouseUp="Grid_MouseUp"
+                  MouseMove="Grid_MouseMove">
+                <Grid x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+                <Canvas>
+                    <Rectangle
+                        x:Name="selectionBox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        StrokeThickness="1" />
+                </Canvas>
+            </Grid>
+        </wpfZoomPanel:ZoomPanelScrollViewer>
     </Grid>
 
 </UserControl>

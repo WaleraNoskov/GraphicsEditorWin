@@ -35,6 +35,8 @@ public class MainViewModel : PropertyObject
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
         DeleteLayerCommand = new RelayCommand(OnDeleteLayerCommandExecuted, CanDeleteLayerCommandExecute);
         DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
+        CropCommand = new RelayCommand<SelectionArea>(OnCropCommandExecuted, CanCropCommandExecute);
+        DivideLayerCommand = new RelayCommand<SelectionArea>(OnDivideLayerCommandExecuted, CanDivideLayerCommandExecute);
     }
 
     public ObservableCollection<GraphicObject> Layers => new(_model.ProjectInfo.Layers);
@@ -184,6 +186,38 @@ public class MainViewModel : PropertyObject
     }
 
     private bool CanSaveFileDialogCommandExecute() => true;
+
+    #endregion
+
+    #region CropLayer
+
+    public ICommand CropCommand { get; set; }
+
+    private void OnCropCommandExecuted(SelectionArea? selectionArea)
+    {
+        if(selectionArea is null)
+            return;
+        
+        _model.CropLayer(selectionArea);
+    }
+
+    private bool CanCropCommandExecute(SelectionArea? selectionArea) => true;
+
+    #endregion
+
+    #region DivideLayer
+
+    public ICommand DivideLayerCommand { get; set; }
+
+    private void OnDivideLayerCommandExecuted(SelectionArea? selectionArea)
+    {
+        if(selectionArea is null)
+            return;
+        
+        _model.DivideNewLayer(selectionArea);
+    }
+
+    private bool CanDivideLayerCommandExecute(SelectionArea? selectionArea) => true;
 
     #endregion
 }

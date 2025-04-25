@@ -17,7 +17,8 @@ public class Program
             {
                 services
                     .AddTransient<IFiltersService, FiltersService>()
-                    .AddTransient<ISavingService, SavingService>();
+                    .AddTransient<ISavingService, SavingService>()
+                    .AddTransient<ISelectionService, SelectionService>();
                 
                 services
                     .AddSingleton<MainModel>()
