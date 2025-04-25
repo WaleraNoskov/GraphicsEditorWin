@@ -25,6 +25,15 @@
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
+      <Page Update="Views\Controls\LayersControl.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\Controls\FiltersControl.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\Controls\EditingAreaControl.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
     </ItemGroup>
 
 </Project>

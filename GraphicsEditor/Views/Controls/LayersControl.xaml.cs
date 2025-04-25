@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace GraphicsEditor.Controls;
+namespace GraphicsEditor.Views.Controls;
 
 public partial class LayersControl : UserControl
 {

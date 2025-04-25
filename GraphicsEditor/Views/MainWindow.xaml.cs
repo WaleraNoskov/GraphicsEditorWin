@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Windows;
 using System.Windows.Input;
-using GraphicsEditor.Infrastructure;
 using GraphicsEditor.ViewModels;
-using OpenCvSharp.WpfExtensions;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 

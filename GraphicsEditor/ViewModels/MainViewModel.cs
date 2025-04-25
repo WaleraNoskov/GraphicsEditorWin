@@ -1,14 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.Input;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Models;
 using Microsoft.Win32;
-using OpenCvSharp;
 
 namespace GraphicsEditor.ViewModels;
 

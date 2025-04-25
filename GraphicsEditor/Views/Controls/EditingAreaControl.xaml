@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="GraphicsEditor.Views.Controls.EditingAreaControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:viewModels="clr-namespace:GraphicsEditor.ViewModels"
+             xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
+             xmlns:controls="clr-namespace:GraphicsEditor.Views.Controls"
+             d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
+             Initialized="EditingAreaControl_OnInitialized">
+    <Grid Background="#00000000">
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Theme/Dark.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Theme/light.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Wpf.Ui.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+                <converters:NullToEnabledConverter x:Key="NullToEnabledConverter" />
+                <converters:EmptyToEnabledConverter x:Key="EmptyToEnabledConverter" />
+                <converters:InvertedNullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" />
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <Canvas>
+            <Rectangle Width="{Binding ElementName=border, Path=ActualWidth, Mode=OneWay}"
+                       Height="{Binding ElementName=border, Path=ActualHeight, Mode=OneWay}">
+                <Rectangle.Fill>
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing Geometry="M0,0 H1 V1 H2 V2 H1 V1 H0Z" Brush="LightGray" />
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Canvas>
+        
+        <controls:ZoomBorder x:Name="border" ClipToBounds="True">
+            <Grid x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+        </controls:ZoomBorder>
+    </Grid>
+
+</UserControl>

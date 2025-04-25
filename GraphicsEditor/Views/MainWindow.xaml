@@ -7,7 +7,7 @@
                  xmlns:wpf="clr-namespace:FluentIcons.Wpf;assembly=FluentIcons.Wpf"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
-                 xmlns:controls="clr-namespace:GraphicsEditor.Controls"
+                 xmlns:controls="clr-namespace:GraphicsEditor.Views.Controls"
                  mc:Ignorable="d"
                  Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
@@ -78,9 +78,9 @@
             </ui:Card>
         </Grid>
 
-        <Grid Grid.Column="1" Grid.Row="1" Margin="8">
+        <Border Grid.Column="1" Grid.Row="1" Margin="8" BorderThickness="1" BorderBrush="{StaticResource CardBorderBrush}">
             <controls:EditingAreaControl x:Name="EditingAreaControl" DataContext="{Binding }"/>
-        </Grid>
+        </Border>
 
         <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
            <controls:FiltersControl DataContext="{Binding }"/>

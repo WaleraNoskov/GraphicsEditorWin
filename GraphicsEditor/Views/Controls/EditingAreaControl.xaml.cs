@@ -2,7 +2,7 @@
 using GraphicsEditor.ViewModels;
 using OpenCvSharp.WpfExtensions;
 
-namespace GraphicsEditor.Controls;
+namespace GraphicsEditor.Views.Controls;
 
 public partial class EditingAreaControl : UserControl
 {
@@ -25,5 +25,10 @@ public partial class EditingAreaControl : UserControl
         
         // for (var i = ViewModel.Layers.Count - 1; i >= 0; i--)
         //     LayersGrid.Children.Add(new Image { Source = ViewModel.Layers[i].Filtered.ToWriteableBitmap() });
+    }
+
+    private void EditingAreaControl_OnInitialized(object? sender, EventArgs e)
+    {
+        Dispatcher.InvokeAsync(RefreshCanvases);
     }
 }

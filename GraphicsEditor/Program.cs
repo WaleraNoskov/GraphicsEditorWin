@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using GraphicsEditor.Models;
+﻿using GraphicsEditor.Models;
 using GraphicsEditor.Services;
 using GraphicsEditor.ViewModels;
 using GraphicsEditor.Views;

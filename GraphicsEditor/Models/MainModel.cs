@@ -1,11 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Services;
-using Microsoft.Win32;
 using OpenCvSharp;
 
 namespace GraphicsEditor.Models;
@@ -21,7 +18,8 @@ public class MainModel : PropertyObject
         _savingService = savingService;
 
         ProjectInfo = new ProjectInfo("Untitled");
-
+        
+        ResetAndReapplyFilters(ProjectInfo.Layers.First());
         SelectLayer(ProjectInfo.Layers.First());
     }
 

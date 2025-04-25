@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using GraphicsEditor.Infrastructure;
 
-namespace GraphicsEditor.Controls;
+namespace GraphicsEditor.Views.Controls;
 
 public partial class FiltersControl : UserControl
 {

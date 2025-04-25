@@ -5,13 +5,13 @@ namespace GraphicsEditor.Entities;
 public class GraphicObject : IDisposable, ICloneable
 {
     public string Name { get; set; }
-    
+
     public Mat Original { get; set; }
 
     public IDictionary<Filter, float> Filters { get; set; }
 
     public Mat Filtered { get; set; }
-    
+
     public GraphicObject(string name, string path)
     {
         Name = name;
@@ -20,20 +20,20 @@ public class GraphicObject : IDisposable, ICloneable
         Cv2.CvtColor(Original, Original, ColorConversionCodes.BGR2BGRA);
 
         Filtered = Original.Clone();
-        
+
         Filters = new Dictionary<Filter, float>();
     }
 
     public GraphicObject(string name, int width, int height)
     {
         Name = name;
-        
-        Original = new Mat(new Size(width, height), MatType.CV_8UC4);
+
+        Original = new Mat(new Size(width, height), MatType.CV_8UC4, new Scalar(255, 255, 255, 255));
         Filtered = Original.Clone();
-        
+
         Filters = new Dictionary<Filter, float>();
     }
-    
+
     public GraphicObject()
     {
         Name = "Background";
@@ -52,7 +52,7 @@ public class GraphicObject : IDisposable, ICloneable
             Filters = new Dictionary<Filter, float>(Filters)
         };
     }
-    
+
     #region Dispose
 
     public void Dispose()
@@ -60,7 +60,7 @@ public class GraphicObject : IDisposable, ICloneable
         Original.Dispose();
         Filtered.Dispose();
     }
-    
+
     ~GraphicObject() => Dispose();
 
     #endregion
