@@ -9,9 +9,10 @@
              xmlns:viewModels="clr-namespace:GraphicsEditor.ViewModels"
              xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
              xmlns:controls="clr-namespace:GraphicsEditor.Views.Controls"
+             xmlns:WPFZoomPanel="https://github.com/Moravuscz/WPFZoomPanel"
              d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
              Initialized="EditingAreaControl_OnInitialized">
-    <Grid Background="#00000000">
+    <Grid Background="#00000000" x:Name="MainContainer">
         <Grid.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
@@ -26,8 +27,8 @@
         </Grid.Resources>
 
         <Canvas>
-            <Rectangle Width="{Binding ElementName=border, Path=ActualWidth, Mode=OneWay}"
-                       Height="{Binding ElementName=border, Path=ActualHeight, Mode=OneWay}">
+            <Rectangle Width="{Binding ElementName=MainContainer, Path=ActualWidth, Mode=OneWay}"
+                       Height="{Binding ElementName=MainContainer, Path=ActualHeight, Mode=OneWay}">
                 <Rectangle.Fill>
                     <DrawingBrush TileMode="Tile" Viewport="0,0,32,32" ViewportUnits="Absolute">
                         <DrawingBrush.Drawing>
@@ -37,10 +38,10 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Canvas>
-        
-        <controls:ZoomBorder x:Name="border" ClipToBounds="True">
+
+        <WPFZoomPanel:ZoomPanelScrollViewer BorderThickness="0" HorizontalScrollBarVisibility="Auto" ZoomAndPanInitialPosition="FitScreen">
             <Grid x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
-        </controls:ZoomBorder>
+        </WPFZoomPanel:ZoomPanelScrollViewer>
     </Grid>
 
 </UserControl>
