@@ -40,6 +40,8 @@ public class MainViewModel : PropertyObject
     }
 
     public ObservableCollection<GraphicObject> Layers => new(_model.ProjectInfo.Layers);
+    
+    public ProjectInfo ProjectInfo => _model.ProjectInfo;
 
     public GraphicObject SelectedLayer
     {

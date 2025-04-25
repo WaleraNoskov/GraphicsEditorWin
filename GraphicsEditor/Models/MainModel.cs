@@ -169,8 +169,9 @@ public class MainModel : PropertyObject
     {
         selectionArea.Left = Math.Max(0, selectionArea.Left);
         selectionArea.Top = Math.Max(0, selectionArea.Top);
-        selectionArea.Width = Math.Min(layer.Original.Width, selectionArea.Width);
-        selectionArea.Height = Math.Min(layer.Original.Height, selectionArea.Height);
+        selectionArea.Width = Math.Min(layer.Original.Width, selectionArea.Width - 1);
+        selectionArea.Height = Math.Min(layer.Original.Height, selectionArea.Height -1);
+        
         var cropped = _selectionService.GetSquare(layer.Original, selectionArea);
         
         layer.Original.Dispose();
@@ -178,6 +179,9 @@ public class MainModel : PropertyObject
         
         layer.Filtered.Dispose();
         layer.Filtered = cropped.Clone();
+        
+        layer.Left = selectionArea.Left;
+        layer.Top = selectionArea.Top;
         
         ReApplyAllFilters(layer);
     }

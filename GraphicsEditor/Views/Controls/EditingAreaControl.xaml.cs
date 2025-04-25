@@ -31,7 +31,12 @@ public partial class EditingAreaControl : UserControl
         foreach (var layer in ViewModel.Layers)
         {
             var source = layer.Filtered.ToWriteableBitmap();
-            LayersGrid.Children.Add(new Image { Source = source,  Width = source.PixelWidth, Height = source.PixelHeight });
+            var image = new Image { Source = source, Width = source.PixelWidth, Height = source.PixelHeight };
+            
+            LayersGrid.Children.Add(image);
+            
+            Canvas.SetLeft(image, layer.Left);
+            Canvas.SetTop(image, layer.Top);
         }
     }
 
@@ -44,18 +49,18 @@ public partial class EditingAreaControl : UserControl
     {
         // Capture and track the mouse.
         _mouseDown = true;
-        _globalMouseDownPos = e.GetPosition(theGrid);
+        _globalMouseDownPos = e.GetPosition(TheGrid);
         _localMouseDownPos = e.GetPosition(LayersGrid.Children[ViewModel.Layers.IndexOf(ViewModel.SelectedLayer)]);
-        theGrid.CaptureMouse();
+        TheGrid.CaptureMouse();
 
         // Initial placement of the drag selection box.         
-        Canvas.SetLeft(selectionBox, _globalMouseDownPos.X);
-        Canvas.SetTop(selectionBox, _globalMouseDownPos.Y);
-        selectionBox.Width = 0;
-        selectionBox.Height = 0;
+        Canvas.SetLeft(SelectionBox, _globalMouseDownPos.X);
+        Canvas.SetTop(SelectionBox, _globalMouseDownPos.Y);
+        SelectionBox.Width = 0;
+        SelectionBox.Height = 0;
 
         // Make the drag selection box visible.
-        selectionBox.Visibility = Visibility.Visible;
+        SelectionBox.Visibility = Visibility.Visible;
     }
 
     private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
@@ -65,12 +70,12 @@ public partial class EditingAreaControl : UserControl
         
         // Release the mouse capture and stop tracking it.
         _mouseDown = false;
-        theGrid.ReleaseMouseCapture();
+        TheGrid.ReleaseMouseCapture();
 
         // Hide the drag selection box.
-        selectionBox.Visibility = Visibility.Collapsed;
+        SelectionBox.Visibility = Visibility.Collapsed;
 
-        var mouseUpPos = e.GetPosition(theGrid);
+        var mouseUpPos = e.GetPosition(TheGrid);
         var localMouseUpPos = e.GetPosition(LayersGrid.Children[ViewModel.Layers.IndexOf(ViewModel.SelectedLayer)]);
 
         var selectionArea = new SelectionArea(
@@ -80,7 +85,7 @@ public partial class EditingAreaControl : UserControl
             Convert.ToInt32(Math.Abs(localMouseUpPos.Y - _localMouseDownPos.Y))
         );
         
-        ViewModel.CropCommand.Execute(selectionArea);
+        ViewModel.DivideLayerCommand.Execute(selectionArea);
     }
 
     private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -89,28 +94,28 @@ public partial class EditingAreaControl : UserControl
         {
             // When the mouse is held down, reposition the drag selection box.
 
-            Point mousePos = e.GetPosition(theGrid);
+            Point mousePos = e.GetPosition(TheGrid);
 
             if (_globalMouseDownPos.X < mousePos.X)
             {
-                Canvas.SetLeft(selectionBox, _globalMouseDownPos.X);
-                selectionBox.Width = mousePos.X - _globalMouseDownPos.X;
+                Canvas.SetLeft(SelectionBox, _globalMouseDownPos.X);
+                SelectionBox.Width = mousePos.X - _globalMouseDownPos.X;
             }
             else
             {
-                Canvas.SetLeft(selectionBox, mousePos.X);
-                selectionBox.Width = _globalMouseDownPos.X - mousePos.X;
+                Canvas.SetLeft(SelectionBox, mousePos.X);
+                SelectionBox.Width = _globalMouseDownPos.X - mousePos.X;
             }
 
             if (_globalMouseDownPos.Y < mousePos.Y)
             {
-                Canvas.SetTop(selectionBox, _globalMouseDownPos.Y);
-                selectionBox.Height = mousePos.Y - _globalMouseDownPos.Y;
+                Canvas.SetTop(SelectionBox, _globalMouseDownPos.Y);
+                SelectionBox.Height = mousePos.Y - _globalMouseDownPos.Y;
             }
             else
             {
-                Canvas.SetTop(selectionBox, mousePos.Y);
-                selectionBox.Height = _globalMouseDownPos.Y - mousePos.Y;
+                Canvas.SetTop(SelectionBox, mousePos.Y);
+                SelectionBox.Height = _globalMouseDownPos.Y - mousePos.Y;
             }
         }
     }

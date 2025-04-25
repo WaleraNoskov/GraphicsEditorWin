@@ -5,12 +5,13 @@ namespace GraphicsEditor.Entities;
 public class GraphicObject : IDisposable, ICloneable
 {
     public string Name { get; set; }
-
     public Mat Original { get; set; }
-
     public IDictionary<Filter, float> Filters { get; set; }
-
     public Mat Filtered { get; set; }
+    public int Left { get; set; }
+    public int Top { get; set; }
+    public int Width => Original.Width;
+    public int Height => Original.Height;
 
     public GraphicObject(string name, string path)
     {
@@ -24,10 +25,13 @@ public class GraphicObject : IDisposable, ICloneable
         Filters = new Dictionary<Filter, float>();
     }
 
-    public GraphicObject(string name, int width, int height)
+    public GraphicObject(string name, int width, int height, int left = 0, int top = 0)
     {
         Name = name;
 
+        Left = left;
+        Top = top;
+        
         Original = new Mat(new Size(width, height), MatType.CV_8UC4, new Scalar(255, 255, 255, 255));
         Filtered = Original.Clone();
 

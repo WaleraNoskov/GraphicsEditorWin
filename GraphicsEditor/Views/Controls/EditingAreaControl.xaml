@@ -34,14 +34,14 @@
         </Canvas>
 
         <wpfZoomPanel:ZoomPanelScrollViewer BorderThickness="0" HorizontalScrollBarVisibility="Auto" ZoomAndPanInitialPosition="FitScreen">
-            <Grid x:Name="theGrid"
+            <Grid x:Name="TheGrid"
                   MouseDown="Grid_MouseDown"
                   MouseUp="Grid_MouseUp"
                   MouseMove="Grid_MouseMove">
-                <Grid x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+                <Canvas Width="{Binding ProjectInfo.Width}" Height="{Binding ProjectInfo.Height}" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
                 <Canvas>
                     <Rectangle
-                        x:Name="selectionBox"
+                        x:Name="SelectionBox"
                         Visibility="Collapsed"
                         Stroke="Black"
                         StrokeThickness="1" />
