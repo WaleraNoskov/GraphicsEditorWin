@@ -14,6 +14,11 @@ public class SelectionService : ISelectionService
 
     public void CutSquare(Mat mat, Frame selectionArea)
     {
-        Cv2.Rectangle(mat, selectionArea.ToRect(), new Scalar(0, 0, 0, 0), -1);
+        var rect = selectionArea.ToRect();
+        rect.Left += 1;
+        rect.Width -= 2;
+        rect.Top += 1;
+        rect.Height -= 2;
+        Cv2.Rectangle(mat, rect, new Scalar(0, 0, 0, 0), -1);
     }
 }

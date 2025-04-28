@@ -84,7 +84,7 @@ public partial class EditingAreaControl : UserControl
             Y2 = Convert.ToInt32(mouseUpPos.Y)
         };
 
-        ViewModel.CropCommand.Execute(selectionArea);
+        ViewModel.DivideLayerCommand.Execute(selectionArea);
     }
 
     private void Grid_MouseMove(object sender, MouseEventArgs e)

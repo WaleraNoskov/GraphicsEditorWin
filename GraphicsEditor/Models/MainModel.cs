@@ -156,10 +156,9 @@ public class MainModel : PropertyObject
         Crop(layer, selectionArea);
 
         _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
-        _selectionService.CutSquare(SelectedLayer.Original, selectionArea);
         ReApplyAllFilters(SelectedLayer);
 
-        ProjectInfo.Layers.Insert(ProjectInfo.Layers.IndexOf(SelectedLayer), layer);
+        ProjectInfo.Layers.Insert(ProjectInfo.Layers.IndexOf(SelectedLayer) + 1, layer);
         SelectLayer(layer);
 
         OnPropertyChanged(nameof(ProjectInfo.Layers));
