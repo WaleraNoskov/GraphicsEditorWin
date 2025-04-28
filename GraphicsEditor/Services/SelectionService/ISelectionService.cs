@@ -5,7 +5,7 @@ namespace GraphicsEditor.Services;
 
 public interface ISelectionService
 {
-    Mat GetSquare(Mat mat, SelectionArea selectionArea);
+    Mat GetSquare(Mat mat, Frame selectionArea);
 
-    void CutSquare(Mat mat, SelectionArea selectionArea);
+    void CutSquare(Mat mat, Frame selectionArea);
 }

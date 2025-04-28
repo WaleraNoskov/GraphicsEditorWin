@@ -35,8 +35,8 @@ public class MainViewModel : PropertyObject
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
         DeleteLayerCommand = new RelayCommand(OnDeleteLayerCommandExecuted, CanDeleteLayerCommandExecute);
         DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
-        CropCommand = new RelayCommand<SelectionArea>(OnCropCommandExecuted, CanCropCommandExecute);
-        DivideLayerCommand = new RelayCommand<SelectionArea>(OnDivideLayerCommandExecuted, CanDivideLayerCommandExecute);
+        CropCommand = new RelayCommand<Frame>(OnCropCommandExecuted, CanCropCommandExecute);
+        DivideLayerCommand = new RelayCommand<Frame>(OnDivideLayerCommandExecuted, CanDivideLayerCommandExecute);
     }
 
     public ObservableCollection<GraphicObject> Layers => new(_model.ProjectInfo.Layers);
@@ -195,7 +195,7 @@ public class MainViewModel : PropertyObject
 
     public ICommand CropCommand { get; set; }
 
-    private void OnCropCommandExecuted(SelectionArea? selectionArea)
+    private void OnCropCommandExecuted(Frame? selectionArea)
     {
         if(selectionArea is null)
             return;
@@ -203,7 +203,7 @@ public class MainViewModel : PropertyObject
         _model.CropLayer(selectionArea);
     }
 
-    private bool CanCropCommandExecute(SelectionArea? selectionArea) => true;
+    private bool CanCropCommandExecute(Frame? selectionArea) => true;
 
     #endregion
 
@@ -211,7 +211,7 @@ public class MainViewModel : PropertyObject
 
     public ICommand DivideLayerCommand { get; set; }
 
-    private void OnDivideLayerCommandExecuted(SelectionArea? selectionArea)
+    private void OnDivideLayerCommandExecuted(Frame? selectionArea)
     {
         if(selectionArea is null)
             return;
@@ -219,7 +219,7 @@ public class MainViewModel : PropertyObject
         _model.DivideNewLayer(selectionArea);
     }
 
-    private bool CanDivideLayerCommandExecute(SelectionArea? selectionArea) => true;
+    private bool CanDivideLayerCommandExecute(Frame? selectionArea) => true;
 
     #endregion
 }

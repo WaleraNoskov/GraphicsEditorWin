@@ -144,13 +144,13 @@ public class MainModel : PropertyObject
         OnPropertyChanged(nameof(Filters));
     }
 
-    public void CropLayer(SelectionArea selectionArea)
+    public void CropLayer(Frame selectionArea)
     {
         Crop(SelectedLayer, selectionArea);
         OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
-    public void DivideNewLayer(SelectionArea selectionArea)
+    public void DivideNewLayer(Frame selectionArea)
     {
         var layer = (SelectedLayer.Clone() as GraphicObject)!;
         Crop(layer, selectionArea);
@@ -165,31 +165,46 @@ public class MainModel : PropertyObject
         OnPropertyChanged(nameof(ProjectInfo.Layers));
     }
 
-    private void Crop(GraphicObject layer, SelectionArea selectionArea)
+    private void Crop(GraphicObject layer, Frame selectionArea)
     {
-        var correctedSelectionArea = new SelectionArea(
-            Math.Max(0, selectionArea.Top),
-            Math.Max(0, selectionArea.Left),
-            Math.Min(layer.Original.Width, selectionArea.Width - 1),
-            Math.Min(layer.Original.Height, selectionArea.Height - 1)
-        );
-        if(selectionArea.Left < 0)
-            correctedSelectionArea.Width += selectionArea.Left;
-        if(selectionArea.Top < 0)
-            correctedSelectionArea.Height += selectionArea.Top;
+        var normalized = new Frame
+        {
+            Y1 = Math.Min(selectionArea.Y1, selectionArea.Y2),
+            X1 = Math.Min(selectionArea.X1, selectionArea.X2),
+            Y2 = Math.Max(selectionArea.Y1, selectionArea.Y2),
+            X2 = Math.Max(selectionArea.X1, selectionArea.X2),
+        };
 
-        var cropped = _selectionService.GetSquare(layer.Original, correctedSelectionArea);
+        var local = new Frame
+        {
+            X1 = normalized.X1 - layer.Left,
+            Y1 = normalized.Y1 - layer.Top,
+            X2 = normalized.X2 - layer.Left,
+            Y2 = normalized.Y2 - layer.Top,
+        };
+        
+        if(!(normalized.X1 < layer.Left + layer.Width && normalized.X2 > layer.Left &&
+           normalized.Y1 < layer.Top + layer.Height && normalized.Y2 > layer.Top))
+            return;
+        
+        var corrected = new Frame
+        {
+            X1 = Math.Max(0, local.X1),
+            Y1 = Math.Max(0, local.Y1),
+            X2 = Math.Min(layer.Width, local.X2),
+            Y2 = Math.Min(layer.Height, local.Y2),
+        };
 
+        var cropped = _selectionService.GetSquare(layer.Original, corrected);
+
+        layer.Top += corrected.Y1;
+        layer.Left += corrected.X1;
+        
         layer.Original.Dispose();
         layer.Original = cropped;
 
         layer.Filtered.Dispose();
         layer.Filtered = cropped.Clone();
-
-        if(selectionArea.Left >= 0)
-            layer.Left = selectionArea.Left;
-        if(selectionArea.Top >= 0)
-            layer.Top = selectionArea.Top;
 
         ReApplyAllFilters(layer);
     }

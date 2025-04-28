@@ -5,6 +5,7 @@ using System.Windows.Media;
 using GraphicsEditor.Entities;
 using GraphicsEditor.ViewModels;
 using OpenCvSharp.WpfExtensions;
+using Frame = GraphicsEditor.Entities.Frame;
 
 namespace GraphicsEditor.Views.Controls;
 
@@ -13,8 +14,7 @@ public partial class EditingAreaControl : UserControl
     private MainViewModel ViewModel => (DataContext as MainViewModel)!;
     
     private bool _mouseDown;
-    private Point _globalMouseDownPos;
-    private Point _localMouseDownPos;
+    private Point _mouseDownPos;
 
     public EditingAreaControl()
     {
@@ -49,13 +49,12 @@ public partial class EditingAreaControl : UserControl
     {
         // Capture and track the mouse.
         _mouseDown = true;
-        _globalMouseDownPos = e.GetPosition(TheGrid);
-        _localMouseDownPos = e.GetPosition(LayersGrid.Children[ViewModel.Layers.IndexOf(ViewModel.SelectedLayer)]);
+        _mouseDownPos = e.GetPosition(TheGrid);
         TheGrid.CaptureMouse();
 
         // Initial placement of the drag selection box.         
-        Canvas.SetLeft(SelectionBox, _globalMouseDownPos.X);
-        Canvas.SetTop(SelectionBox, _globalMouseDownPos.Y);
+        Canvas.SetLeft(SelectionBox, _mouseDownPos.X);
+        Canvas.SetTop(SelectionBox, _mouseDownPos.Y);
         SelectionBox.Width = 0;
         SelectionBox.Height = 0;
 
@@ -76,15 +75,15 @@ public partial class EditingAreaControl : UserControl
         SelectionBox.Visibility = Visibility.Collapsed;
 
         var mouseUpPos = e.GetPosition(TheGrid);
-        var localMouseUpPos = e.GetPosition(LayersGrid.Children[ViewModel.Layers.IndexOf(ViewModel.SelectedLayer)]);
 
-        var selectionArea = new SelectionArea(
-            Convert.ToInt32 (Math.Min(_localMouseDownPos.Y, localMouseUpPos.Y)),
-            Convert.ToInt32(Math.Min(_localMouseDownPos.X, localMouseUpPos.X)),
-            Convert.ToInt32(Math.Abs(localMouseUpPos.X - _localMouseDownPos.X)),
-            Convert.ToInt32(Math.Abs(localMouseUpPos.Y - _localMouseDownPos.Y))
-        );
-        
+        var selectionArea = new Frame
+        {
+            X1 = Convert.ToInt32(_mouseDownPos.X),
+            Y1 = Convert.ToInt32(_mouseDownPos.Y),
+            X2 = Convert.ToInt32(mouseUpPos.X),
+            Y2 = Convert.ToInt32(mouseUpPos.Y)
+        };
+
         ViewModel.CropCommand.Execute(selectionArea);
     }
 
@@ -96,26 +95,26 @@ public partial class EditingAreaControl : UserControl
 
             Point mousePos = e.GetPosition(TheGrid);
 
-            if (_globalMouseDownPos.X < mousePos.X)
+            if (_mouseDownPos.X < mousePos.X)
             {
-                Canvas.SetLeft(SelectionBox, _globalMouseDownPos.X);
-                SelectionBox.Width = mousePos.X - _globalMouseDownPos.X;
+                Canvas.SetLeft(SelectionBox, _mouseDownPos.X);
+                SelectionBox.Width = mousePos.X - _mouseDownPos.X;
             }
             else
             {
                 Canvas.SetLeft(SelectionBox, mousePos.X);
-                SelectionBox.Width = _globalMouseDownPos.X - mousePos.X;
+                SelectionBox.Width = _mouseDownPos.X - mousePos.X;
             }
 
-            if (_globalMouseDownPos.Y < mousePos.Y)
+            if (_mouseDownPos.Y < mousePos.Y)
             {
-                Canvas.SetTop(SelectionBox, _globalMouseDownPos.Y);
-                SelectionBox.Height = mousePos.Y - _globalMouseDownPos.Y;
+                Canvas.SetTop(SelectionBox, _mouseDownPos.Y);
+                SelectionBox.Height = mousePos.Y - _mouseDownPos.Y;
             }
             else
             {
                 Canvas.SetTop(SelectionBox, mousePos.Y);
-                SelectionBox.Height = _globalMouseDownPos.Y - mousePos.Y;
+                SelectionBox.Height = _mouseDownPos.Y - mousePos.Y;
             }
         }
     }
