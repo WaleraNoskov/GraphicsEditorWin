@@ -11,3 +11,7 @@ Small and nice image editing tool.
 ### Technologies:
 * WPF + MVVM.
 * OpenCvSharp.
+
+### Coming Soon:
+* Working with layers and creating collages.
+* Color correction.
