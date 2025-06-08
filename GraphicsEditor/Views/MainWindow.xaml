@@ -83,12 +83,12 @@
             </Grid.RowDefinitions>
 
             <ui:TextBlock Grid.Row="1" Text="Откройте изображение и творите чудеса" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}"
+                          Visibility="{Binding GraphicObject, Converter={StaticResource InvertedNullToVisibilityConverter}}"
                           Foreground="Gray"/>
-            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
+            <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding GraphicObject, Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>
 
-        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
+        <ui:Card Grid.Row="1" Grid.Column="2" Margin="8" IsEnabled="{Binding GraphicObject, Converter={StaticResource NullToEnabledConverter}}">
             <StackPanel>
                 <StackPanel.Resources>
                     <Style x:Key="FiltersRow" TargetType="StackPanel">

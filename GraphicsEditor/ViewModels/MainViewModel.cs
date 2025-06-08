@@ -33,17 +33,9 @@ public class MainViewModel : PropertyObject
         ResetCommand = new RelayCommand(OnResetCommandExecuted, CanResetCommandExecute);
         OpenImageDialogCommand = new RelayCommand(OnOpenImageDialogCommandExecuted, CanOpenImageDialogCommandExecute);
         SaveFileDialogCommand = new AsyncRelayCommand(OnSaveFileDialogCommandExecuted, CanSaveFileDialogCommandExecute);
-        DeleteLayerCommand = new RelayCommand(OnDeleteLayerCommandExecuted, CanDeleteLayerCommandExecute);
-        DuplicateLayerCommand = new RelayCommand(OnDuplicateLayerCommandExecuted, CanDuplicateLayerCommandExecute);
     }
-
-    public ObservableCollection<GraphicObject> Layers => _model.Layers;
-
-    public GraphicObject SelectedLayer
-    {
-        get => _model.SelectedLayer;
-        set => _model.SelectLayer(value);
-    }
+    
+    public GraphicObject GraphicObject => _model.GraphicObject;
 
     public IReadOnlyDictionary<Filter, float> Filters
     {
@@ -60,7 +52,7 @@ public class MainViewModel : PropertyObject
 
     public int Grayscale
     {
-        get => _model.Filters.ContainsKey(Filter.Grayscale)
+        get => _model.Filters is not null && _model.Filters.ContainsKey(Filter.Grayscale)
             ? _model.Filters[Filter.Grayscale].ToPercentage()
             : DefaultFilterValues.DefaultGrayscale.ToPercentage();
         set
@@ -75,7 +67,7 @@ public class MainViewModel : PropertyObject
 
     public int Brightness
     {
-        get => _model.Filters.ContainsKey(Filter.Brightness)
+        get => _model.Filters is not null && _model.Filters.ContainsKey(Filter.Brightness)
             ? Convert.ToInt32(_model.Filters[Filter.Brightness])
             : Convert.ToInt32(DefaultFilterValues.DefaultBrightness);
         set
@@ -90,7 +82,7 @@ public class MainViewModel : PropertyObject
 
     public int Contrast
     {
-        get => _model.Filters.ContainsKey(Filter.Contrast)
+        get => _model.Filters is not null && _model.Filters.ContainsKey(Filter.Contrast)
             ? _model.Filters[Filter.Contrast].ToPercentage()
             : DefaultFilterValues.DefaultContrast.ToPercentage();
         set
@@ -101,7 +93,7 @@ public class MainViewModel : PropertyObject
         }
     }
 
-    public bool ImageIsChanged => SelectedLayer is not null && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
+    public bool ImageIsChanged => GraphicObject is not null && (GrayscaleIsEnabled || BrightnessIsEnabled || ContrastIsEnabled);
 
     #region ResetCommand
 
@@ -109,7 +101,8 @@ public class MainViewModel : PropertyObject
 
     private void OnResetCommandExecuted()
     {
-        _model.ResetAndReapplyFilters();
+        _model.ResetFilters();
+        _model.ReApplyFilters();
         OnPropertyChanged(nameof(ImageIsChanged));
     }
 
@@ -140,39 +133,13 @@ public class MainViewModel : PropertyObject
 
     #endregion
 
-    #region DeleteLayer
-
-    public ICommand DeleteLayerCommand { get; set; }
-
-    private void OnDeleteLayerCommandExecuted()
-    {
-        _model.DeleteLayer();
-    }
-
-    private bool CanDeleteLayerCommandExecute() => true;
-
-    #endregion
-
-    #region DuplicateLayer
-
-    public ICommand DuplicateLayerCommand { get; set; }
-
-    private void OnDuplicateLayerCommandExecuted()
-    {
-        _model.DuplicateLayer();
-    }
-
-    private bool CanDuplicateLayerCommandExecute() => true;
-
-    #endregion
-
     #region SaveFileDialog
 
     public ICommand SaveFileDialogCommand { get; set; }
 
     private async Task OnSaveFileDialogCommandExecuted()
     {
-        if (Layers.Count == 0)
+        if (GraphicObject is null)
             return;
         
         var dialog = new SaveFileDialog();

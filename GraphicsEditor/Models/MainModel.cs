@@ -11,90 +11,47 @@ public class MainModel : PropertyObject
 {
     private readonly IFiltersService _filtersService;
     private readonly ISavingService _savingService;
+    
+    private GraphicObject _graphicObject;
 
     public MainModel(IFiltersService filtersService, ISavingService savingService)
     {
         _filtersService = filtersService;
         _savingService = savingService;
 
-        SelectLayer(new GraphicObject());
-        SelectLayer(null);
+        GraphicObject = new GraphicObject();
+        ResetFilters();
     }
-
-    public ObservableCollection<GraphicObject> Layers { get; set; } = [];
-
-    #region SelectedLayer
-
-    private GraphicObject _selectedLayer;
-
-    public GraphicObject SelectedLayer
+    
+    public GraphicObject GraphicObject
     {
-        get => _selectedLayer;
-        private set => SetField(ref _selectedLayer, value);
+        get => _graphicObject;
+        private set => SetField(ref _graphicObject, value);
     }
-
-    #endregion
 
     public IReadOnlyDictionary<Filter, float> Filters { get; private set; }
 
     public void SetFilterAsync(Filter filter, float mix)
     {
-        if (!SelectedLayer.Filters.ContainsKey(filter))
-            SelectedLayer.Filters.TryAdd(filter, mix);
+        if (!GraphicObject.Filters.ContainsKey(filter))
+            GraphicObject.Filters.TryAdd(filter, mix);
 
-        SelectedLayer.Filters[filter] = mix;
+        GraphicObject.Filters[filter] = mix;
 
-        ReApplyAllFilters(SelectedLayer);
-        OnPropertyChanged(nameof(Filters));
-    }
-
-    public void ResetAndReapplyFilters(GraphicObject? layer = null)
-    {
-        ResetFilters(layer ?? SelectedLayer);
-        ReApplyAllFilters(layer ?? SelectedLayer);
-
+        ReApplyFilters();
         OnPropertyChanged(nameof(Filters));
     }
 
     public void OpenFile(string path)
     {
-        foreach(var oldLayer in Layers)
-            oldLayer.Dispose();
-        Layers.Clear();
+        GraphicObject.Dispose();
         
-        var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
-        Layers.Add(layer);
-        ResetAndReapplyFilters(layer);
-        SelectLayer(layer);
-    }
-
-    public void DeleteLayer()
-    {
-        if(SelectedLayer is null)
-            return;
+        GraphicObject = new GraphicObject($"Image", path);
+        ResetFilters();
+        ReApplyFilters();
         
-        var layerToDelete = SelectedLayer;
-        var layerToDeleteIndex = Layers.IndexOf(layerToDelete);
-        if(Layers.Count > 1 && layerToDeleteIndex > 0)
-            SelectLayer(Layers[layerToDeleteIndex - 1]);
-        if(Layers.Count > 1 && layerToDeleteIndex < Layers.Count - 1)
-            SelectLayer(Layers[layerToDeleteIndex + 1]);
-        
-        Layers.Remove(layerToDelete);
-        layerToDelete.Dispose();
-        
-        OnPropertyChanged(nameof(Layers));
-    }
-
-    public void DuplicateLayer()
-    {
-        if (SelectedLayer is null)
-            return;
-
-        var duplicate = (GraphicObject)SelectedLayer.Clone();
-        Layers.Add(duplicate);
-        SelectLayer(duplicate);
-        ReApplyAllFilters(duplicate);
+        Filters = new ReadOnlyDictionary<Filter, float>(GraphicObject.Filters);
+        OnPropertyChanged(nameof(Filters));
     }
     
     public async Task<bool> SaveImage(string path)
@@ -104,29 +61,21 @@ public class MainModel : PropertyObject
         return extension switch
         {
             ".jpeg" or ".jpg"
-                => _savingService.SaveAsJpg(SelectedLayer.Filtered, path, 100),
+                => _savingService.SaveAsJpg(GraphicObject.Filtered, path, 100),
             ".png"
-                => _savingService.SaveAsPng(SelectedLayer.Filtered, path, 0),
+                => _savingService.SaveAsPng(GraphicObject.Filtered, path, 0),
             ".tiff"
-                => _savingService.SaveAsTiff(SelectedLayer.Filtered, path),
+                => _savingService.SaveAsTiff(GraphicObject.Filtered, path),
             _ => false
         };
     }
-
-    public void SelectLayer(GraphicObject layer)
-    {
-        SelectedLayer = layer;
-        Filters = new ReadOnlyDictionary<Filter, float>(SelectedLayer?.Filters ?? new Dictionary<Filter, float>());
-        
-        OnPropertyChanged(nameof(Filters));
-    }
     
-    private void ReApplyAllFilters(GraphicObject layer)
+    public void ReApplyFilters()
     {
-        layer.Filtered.Dispose();
-        layer.Filtered = layer.Original.Clone();
+        GraphicObject.Filtered.Dispose();
+        GraphicObject.Filtered = GraphicObject.Original.Clone();
 
-        foreach (var filter in layer.Filters)
+        foreach (var filter in GraphicObject.Filters)
         {
             Action<Mat, float>? filteringAction = filter.Key switch
             {
@@ -135,22 +84,22 @@ public class MainModel : PropertyObject
                 _ => null
             };
 
-            filteringAction?.Invoke(layer.Filtered, filter.Value);
+            filteringAction?.Invoke(GraphicObject.Filtered, filter.Value);
         }
 
-        var foundContrast = layer.Filters.TryGetValue(Filter.Contrast, out var contrast);
-        var foundBrightness = layer.Filters.TryGetValue(Filter.Brightness, out var brightness);
+        var foundContrast = GraphicObject.Filters.TryGetValue(Filter.Contrast, out var contrast);
+        var foundBrightness = GraphicObject.Filters.TryGetValue(Filter.Brightness, out var brightness);
 
-        _filtersService.ApplyBrightnessAndContrast(layer.Filtered, foundContrast ? contrast : 1, foundBrightness ? brightness : 0);
+        _filtersService.ApplyBrightnessAndContrast(GraphicObject.Filtered, foundContrast ? contrast : 1, foundBrightness ? brightness : 0);
     }
 
-    private static void ResetFilters(GraphicObject layer)
+    public void ResetFilters()
     {
-        layer.Filters.Clear();
+        GraphicObject.Filters.Clear();
 
-        layer.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
-        layer.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
-        layer.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);
-        layer.Filters.Add(Filter.Alpha, DefaultFilterValues.DefaultAlpha);
+        GraphicObject.Filters.Add(Filter.Grayscale, DefaultFilterValues.DefaultGrayscale);
+        GraphicObject.Filters.Add(Filter.Brightness, DefaultFilterValues.DefaultBrightness);
+        GraphicObject.Filters.Add(Filter.Contrast, DefaultFilterValues.DefaultContrast);
+        GraphicObject.Filters.Add(Filter.Alpha, DefaultFilterValues.DefaultAlpha);
     }
 }
