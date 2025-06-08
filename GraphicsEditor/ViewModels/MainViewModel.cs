@@ -1,14 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.Input;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Models;
 using Microsoft.Win32;
-using OpenCvSharp;
 
 namespace GraphicsEditor.ViewModels;
 
@@ -136,8 +132,8 @@ public class MainViewModel : PropertyObject
         var result = dialog.ShowDialog();
         if (result is not true)
             return;
-
-        _model.AddLayerFromFile(dialog.FileName);
+        
+        _model.OpenFile(dialog.FileName);
     }
 
     private bool CanOpenImageDialogCommandExecute() => true;
@@ -176,6 +172,9 @@ public class MainViewModel : PropertyObject
 
     private async Task OnSaveFileDialogCommandExecuted()
     {
+        if (Layers.Count == 0)
+            return;
+        
         var dialog = new SaveFileDialog();
         dialog.FileName = "Untitled";
         dialog.Filter = "Png files (*.png)|*.png|Jpeg files (*.jpeg)|*.jpeg|Tiff files (*.tiff)|*.tiff";

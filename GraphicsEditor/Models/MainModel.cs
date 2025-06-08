@@ -1,11 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using GraphicsEditor.Entities;
 using GraphicsEditor.Infrastructure;
 using GraphicsEditor.Services;
-using Microsoft.Win32;
 using OpenCvSharp;
 
 namespace GraphicsEditor.Models;
@@ -59,8 +56,12 @@ public class MainModel : PropertyObject
         OnPropertyChanged(nameof(Filters));
     }
 
-    public void AddLayerFromFile(string path)
+    public void OpenFile(string path)
     {
+        foreach(var oldLayer in Layers)
+            oldLayer.Dispose();
+        Layers.Clear();
+        
         var layer = new GraphicObject($"Layer {Layers.Count + 1}",path);
         Layers.Add(layer);
         ResetAndReapplyFilters(layer);

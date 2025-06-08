@@ -11,7 +11,7 @@
                  xmlns:entities="clr-namespace:GraphicsEditor.Entities"
                  xmlns:converters="clr-namespace:GraphicsEditor.Infrastructure.Converters"
                  mc:Ignorable="d"
-                 Title="MainWindow" MinHeight="450" MinWidth="1024" Height="450" Width="800"
+                 Title="MainWindow" MinHeight="450" MinWidth="800" Height="450" Width="800"
                  Initialized="MainWindow_OnInitialized"
                  d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.Resources>
@@ -53,13 +53,13 @@
                 <ui:Button Margin="0 0 8 0" Height="32" Command="{Binding OpenImageDialogCommand}">
                     <StackPanel Orientation="Horizontal">
                         <wpf:FluentIcon Icon="Open" IconVariant="Filled" />
-                        <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Open" />
+                        <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Открыть" />
                     </StackPanel>
                 </ui:Button>
-                <ui:Button Height="32" Command="{Binding SaveFileDialogCommand}" IsEnabled="{Binding Layers, Converter={StaticResource EmptyToEnabledConverter}}">
+                <ui:Button Height="32" Command="{Binding SaveFileDialogCommand}">
                     <StackPanel Orientation="Horizontal">
                         <wpf:FluentIcon Icon="Save" IconVariant="Filled" />
-                        <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Save" />
+                        <ui:TextBlock VerticalAlignment="Center" Padding="0" Text="Сохранить" />
                     </StackPanel>
                 </ui:Button>
             </StackPanel>
@@ -71,64 +71,20 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="1" Text="Graphics Editor" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="Графический редактор" VerticalAlignment="Center" />
             </Grid>
             <ui:TitleBar Grid.Column="2" />
         </Grid>
 
-        <Grid Grid.Column="0" Grid.Row="1">
-            <ui:Card Margin="8">
-                <StackPanel>
-                    <Grid Margin="0 0 0 16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBlock FontSize="16" FontWeight="Bold" Text="Layers" />
-
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <StackPanel.Resources>
-                                <Style x:Key="LayersButtons" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                    <Setter Property="Padding" Value="4" />
-                                    <Setter Property="Margin" Value="4 0 0 0"></Setter>
-                                </Style>
-                            </StackPanel.Resources>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding OpenImageDialogCommand}">
-                                <wpf:FluentIcon Icon="Add" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DuplicateLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Copy" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Settings" IconVariant="Filled" />
-                            </ui:Button>
-                            <ui:Button Style="{StaticResource LayersButtons}" Command="{Binding DeleteLayerCommand}"
-                                       IsEnabled="{Binding SelectedLayer, Converter={StaticResource NullToEnabledConverter}}">
-                                <wpf:FluentIcon Icon="Subtract" IconVariant="Filled" />
-                            </ui:Button>
-                        </StackPanel>
-                    </Grid>
-                    <ui:ListView x:Name="LayersListView" SelectedItem="{Binding SelectedLayer}" ItemsSource="{Binding Layers}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type entities:GraphicObject}">
-                                <TextBlock Text="{Binding Name}" Margin="4 0 0 0" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ui:ListView>
-                </StackPanel>
-            </ui:Card>
-        </Grid>
-
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid Grid.ColumnSpan="2" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <ui:TextBlock Grid.Row="1" Text="Open the image and make magic!" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
+            <ui:TextBlock Grid.Row="1" Text="Откройте изображение и творите чудеса" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Visibility="{Binding SelectedLayer, Converter={StaticResource InvertedNullToVisibilityConverter}}"
+                          Foreground="Gray"/>
             <Grid Grid.Row="1" Margin="8" x:Name="LayersGrid" Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}" />
         </Grid>
 
@@ -140,12 +96,12 @@
                     </Style>
                 </StackPanel.Resources>
                 <StackPanel Style="{StaticResource FiltersRow}">
-                    <ui:TextBlock FontSize="16" FontWeight="Bold">Filters</ui:TextBlock>
+                    <ui:TextBlock FontSize="16" FontWeight="Bold">Фильтры</ui:TextBlock>
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Grayscale" VerticalAlignment="Center" Margin="0 0 4 0" />
+                        <ui:TextBlock Text="Серый" VerticalAlignment="Center" Margin="0 0 4 0" />
                         <ui:Button x:Name="GrayscaleDefaultButton" Click="GrayscaleDefaultButton_OnClick" Padding="0" Height="22" Width="22"
                                    Visibility="{Binding GrayscaleIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
@@ -160,7 +116,7 @@
 
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Brightness" Margin="0 0 4 0" VerticalAlignment="Center" />
+                        <ui:TextBlock Text="Яркость" Margin="0 0 4 0" VerticalAlignment="Center" />
                         <ui:Button x:Name="BrightnessDefaultButton" Click="BrightnessDefaultButton_OnClick" Padding="0" Height="22" Width="22"
                                    Visibility="{Binding BrightnessIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
@@ -175,7 +131,7 @@
 
                 <StackPanel Style="{StaticResource FiltersRow}">
                     <StackPanel Orientation="Horizontal" Height="22">
-                        <ui:TextBlock Text="Contrast" Margin="0 0 4 0" VerticalAlignment="Center" />
+                        <ui:TextBlock Text="Контраст" Margin="0 0 4 0" VerticalAlignment="Center" />
                         <ui:Button x:Name="ContrastDefaultButton" Click="ContrastDefaultButton_OnClick" Padding="0" Width="22"
                                    Visibility="{Binding ContrastIsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" Height="22">
                             <wpf:FluentIcon Icon="ArrowHookUpLeft" IconVariant="Regular" />
@@ -188,7 +144,7 @@
                             Value="{Binding Contrast}" />
                 </StackPanel>
 
-                <ui:Button HorizontalAlignment="Stretch" Content="Clear" Command="{Binding ResetCommand}" />
+                <ui:Button HorizontalAlignment="Stretch" Content="Очистить" Command="{Binding ResetCommand}" />
             </StackPanel>
         </ui:Card>
     </Grid>
